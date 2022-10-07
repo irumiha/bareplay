@@ -19,6 +19,7 @@ class ApplicationComponents(context: Context) extends BuiltInComponentsFromConte
 
   val router: Router = Router.from {
     case GET(p"/") => homeController.index()
+
     case GET(p"/assets/$file*") =>
       assets.versioned(path = "/public", file = file)
   }
