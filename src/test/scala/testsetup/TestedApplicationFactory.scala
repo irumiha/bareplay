@@ -1,6 +1,6 @@
 package testsetup
 
-import application.AppLoader
+import application.Loader
 import org.scalatestplus.play.FakeApplicationFactory
 import play.api.{Application, ApplicationLoader, Environment}
 
@@ -10,7 +10,7 @@ trait TestedApplicationFactory extends FakeApplicationFactory {
     def build(): Application = {
       val env = Environment.simple()
       val context = ApplicationLoader.Context.create(env)
-      val loader = new AppLoader()
+      val loader = new Loader()
       loader.load(context)
     }
   }

@@ -1,10 +1,10 @@
-package application
+package application.modules
 
 import controllers.HomeController
 import play.api.i18n.Langs
 import play.api.mvc.ControllerComponents
 
-trait MainApplicationModule {
+trait AllControllersModule {
 
   import com.softwaremill.macwire._
 
