@@ -4,7 +4,7 @@ import play.api.ApplicationLoader.Context
 import play.api.{LoggerConfigurator, ApplicationLoader, Application}
 
 class ApplicationComponents(context: Context)
-  extends Routes(context)
+    extends Routes(context)
     with play.filters.HttpFiltersComponents {
 
   LoggerConfigurator(context.environment.classLoader).foreach {
@@ -14,5 +14,7 @@ class ApplicationComponents(context: Context)
 }
 
 class Loader extends ApplicationLoader {
-  def load(context: Context): Application = new ApplicationComponents(context).application
+  def load(context: Context): Application = new ApplicationComponents(
+    context
+  ).application
 }

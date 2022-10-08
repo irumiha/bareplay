@@ -8,9 +8,9 @@ trait TestedApplicationFactory extends FakeApplicationFactory {
 
   private class GreetingApplicationBuilder {
     def build(): Application = {
-      val env = Environment.simple()
+      val env     = Environment.simple()
       val context = ApplicationLoader.Context.create(env)
-      val loader = new Loader()
+      val loader  = new Loader()
       loader.load(context)
     }
   }

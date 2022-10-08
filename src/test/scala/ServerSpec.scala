@@ -5,12 +5,13 @@ import play.api.test.Helpers._
 import play.api.test.WsTestClient
 import testsetup.TestedApplicationFactory
 
-class ServerSpec extends PlaySpec
-  with BaseOneServerPerSuite
-  with TestedApplicationFactory
-  with Results
-  with ScalaFutures
-  with IntegrationPatience {
+class ServerSpec
+    extends PlaySpec
+    with BaseOneServerPerSuite
+    with TestedApplicationFactory
+    with Results
+    with ScalaFutures
+    with IntegrationPatience {
 
   "Server query should" should {
     "work" in {
@@ -22,4 +23,3 @@ class ServerSpec extends PlaySpec
     }
   }
 }
-

@@ -7,11 +7,12 @@ import controllers.AssetsComponents
 import play.api.i18n.I18nComponents
 import play.api.routing.Router
 
-
 abstract class Routes(context: Context)
-  extends BuiltInComponentsFromContext(context) // We need this here to be able to inject controllers with ControllerComponents
+    extends BuiltInComponentsFromContext(
+      context
+    ) // We need this here to be able to inject controllers with ControllerComponents
     with AllControllersModule // Controllers module
-    with AssetsComponents // Assets controller, serves static assets
+    with AssetsComponents     // Assets controller, serves static assets
     with I18nComponents { // Languages and internationalization
 
   val router: Router = {
