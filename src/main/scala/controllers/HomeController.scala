@@ -10,7 +10,7 @@ class HomeController(
 ) extends AbstractController(controllerComponents) {
   import application.ScalaTagsSupport._
 
-  def index(): Action[AnyContent] = Action {
+  def index: Action[AnyContent] = Action {
     implicit request: Request[AnyContent] =>
       Ok(HomeViews.index)
   }

@@ -1,29 +1,23 @@
 package application
 
 import application.modules.AllControllersModule
-import play.api.ApplicationLoader.Context
-import play.api.BuiltInComponentsFromContext
-import controllers.AssetsComponents
 import play.api.i18n.I18nComponents
+import controllers.AssetsComponents
 import play.api.routing.Router
+import play.api.routing.sird._
 
-abstract class Routes(context: Context)
-    extends BuiltInComponentsFromContext(
-      context
-    ) // We need this here to be able to inject controllers with ControllerComponents
-    with AllControllersModule // Controllers module
-    with AssetsComponents     // Assets controller, serves static assets
+trait Routes
+    extends AllControllersModule // Our controllers module
+    with AssetsComponents        // Assets controller, serves static assets
     with I18nComponents { // Languages and internationalization
 
-  val router: Router = {
-    import play.api.routing.sird._ // Localize the wildcard import to where the SIRD definitions are needed
-
+  val router: Router =
     Router.from {
-      case GET(p"/") => homeController.index()
+      case GET(p"/")             => homeController.index
+      case GET(p"/current-time") => currentTimeFromDbController.timeFromDb
 
       case GET(p"/assets/$file*") =>
         assets.versioned(path = "/public", file = file)
     }
-  }
 
 }
