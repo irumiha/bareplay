@@ -32,5 +32,7 @@ lazy val root = (project in file("."))
       "-feature",
       "-deprecation",
       "-Xfatal-warnings"
-    )
+    ),
+    dockerBaseImage := "azul/zulu-openjdk:19-jre-headless",
+    dockerExposedPorts ++= Seq(9000),
   )
