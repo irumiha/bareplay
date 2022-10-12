@@ -6,7 +6,7 @@ import play.api.{Application, ApplicationLoader, Environment}
 
 trait TestedApplicationFactory extends FakeApplicationFactory {
 
-  private class GreetingApplicationBuilder {
+  private class TestedApplicationBuilder {
     def build(): Application = {
       val env     = Environment.simple()
       val context = ApplicationLoader.Context.create(env)
@@ -15,6 +15,6 @@ trait TestedApplicationFactory extends FakeApplicationFactory {
     }
   }
 
-  def fakeApplication(): Application = new GreetingApplicationBuilder().build()
+  def fakeApplication(): Application = new TestedApplicationBuilder().build()
 
 }
