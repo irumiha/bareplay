@@ -3,7 +3,7 @@ BarePlay
 --------
 
 What you are looking at here is an example of a minimal approach to building a
-[Playframework](https://www.playframework.com/) application. Primarily, we don't use the Play sbt plugin.
+[Playframework](https://www.playframework.com/) application.
 
 Playframework is for some reason regarded as a heawyweight framework.
 I think much of that perception comes from the use of Sbt play plugin which promotes 
@@ -12,7 +12,9 @@ complicated dev mode.
 
 However, Playframework is a very flexible piece of software. You don't need to use 
 all that is prescribed by the default setup you get when checking out the 
-playframework seed project.
+playframework seed project. 
+
+What happens when we remove the Play Sbt plugin?
 
 #### Dependencies are declared explicitely.
 
