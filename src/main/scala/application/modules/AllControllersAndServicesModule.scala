@@ -2,27 +2,26 @@ package application.modules
 
 import akka.actor.ActorSystem
 import application.{DatabaseExecutionContext, DatabaseExecutionContextImpl}
-import controllers.{CurrentTimeFromDbController, HomeController}
+import controllers.{HomeController, VisitCounterController}
+import models.AccessCounterRepository
 import play.api.db.Database
 import play.api.i18n.Langs
 import play.api.mvc.ControllerComponents
 
-trait AllControllersModule {
+trait AllControllersAndServicesModule {
   import com.softwaremill.macwire._
 
+  lazy val homeController: HomeController = wire[HomeController]
+  lazy val visitCounterController: VisitCounterController = wire[VisitCounterController]
   lazy val databaseExecutionContext: DatabaseExecutionContext =
     wire[DatabaseExecutionContextImpl]
 
-  lazy val homeController: HomeController = wire[HomeController]
-  lazy val currentTimeFromDbController: CurrentTimeFromDbController =
-    wire[CurrentTimeFromDbController]
+  lazy val accessCounterRepository: AccessCounterRepository = wire[AccessCounterRepository]
 
-  def database: Database
-
-  def langs: Langs
-
-  def controllerComponents: ControllerComponents
 
   def actorSystem: ActorSystem
+  def langs: Langs
+  def controllerComponents: ControllerComponents
+  def database: Database
 
 }

@@ -17,8 +17,15 @@
   <logger name="play" level="INFO" />
   <logger name="application" level="DEBUG" />
 
+  <logger name="slick.basic" level="ERROR" />
+  <logger name="scala.slick" level="ERROR" />
+
   <root level="WARN">
     <appender-ref ref="ASYNCSTDOUT" />
   </root>
 
 </configuration>
+
+
+
+

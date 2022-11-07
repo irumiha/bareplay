@@ -1,27 +1,19 @@
 package application
 
+import org.flywaydb.play.FlywayPlayComponents
 import play.api.ApplicationLoader.Context
-import play.api.db.evolutions.EvolutionsComponents
-import play.api.db.{DBComponents, Database, HikariCPComponents, PooledDatabase}
-import play.api.{
-  Application,
-  ApplicationLoader,
-  BuiltInComponentsFromContext,
-  LoggerConfigurator
-}
+import play.api.db.{DBComponents, Database, HikariCPComponents}
+import play.api.{Application, ApplicationLoader, BuiltInComponentsFromContext, LoggerConfigurator}
 
 class ApplicationComponents(context: Context)
-    extends BuiltInComponentsFromContext(
-      context
-    )
+    extends BuiltInComponentsFromContext(context)
+    with FlywayPlayComponents
     with DBComponents
-    with EvolutionsComponents
     with HikariCPComponents
     with play.filters.HttpFiltersComponents
     with Routes {
 
-  // this will actually run the database migrations on startup
-  applicationEvolutions
+  flywayPlayInitializer
 
   val database: Database = dbApi.database("default")
 
