@@ -50,5 +50,9 @@ lazy val root = (project in file("."))
     addCommandAlias(
       "devReload",
       "~ reStart --- -Dconfig.resource=application.dev.conf -DliveReload=true"
-    )
+    ),
+    addCommandAlias(
+      "devReloadPg",
+      "~ reStart --- -Dconfig.resource=application.dev-pg.conf -DliveReload=true"
+      )
   )
