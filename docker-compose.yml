@@ -7,5 +7,22 @@ services:
       - POSTGRES_USER=localdev
       - POSTGRES_PASSWORD=localdev
       - POSTGRES_DB=localdev
+    volumes:
+      - "./docker/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d"
     ports:
       - '5432:5432'
+  keycloak:
+    image: bitnami/keycloak:latest
+    restart: unless-stopped
+    environment:
+      - KEYCLOAK_DATABASE_HOST=db
+      - KEYCLOAK_DATABASE_NAME=localdev
+      - KEYCLOAK_DATABASE_USER=localdev
+      - KEYCLOAK_DATABASE_PASSWORD=localdev
+      - KEYCLOAK_DATABASE_SCHEMA=keycloak
+      - KEYCLOAK_ENABLE_STATISTICS=true
+    ports:
+      - '8080:8080'
+      - '8443:8443'
+    depends_on:
+      - db
