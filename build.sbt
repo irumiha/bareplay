@@ -15,8 +15,6 @@ val playComponents = Seq(
 
 lazy val slick = taskKey[Seq[File]]("Generate Tables.scala")
 
-addCommandAlias("build", "; flywayMigrate; slick; compile")
-
 lazy val root = (project in file("."))
   .enablePlugins(JavaServerAppPackaging, DockerPlugin)
   .settings(
@@ -34,9 +32,10 @@ lazy val root = (project in file("."))
           "com.h2database"           % "h2"              % "2.1.214",
           "ch.qos.logback"           % "logback-classic" % "1.4.4",
           "org.flywaydb"            %% "flyway-play"     % "7.25.0",
+          "com.github.jwt-scala"    %% "jwt-core"        % "9.1.2",
           "com.softwaremill.macwire" %% "macros" % "2.5.8" % "provided",
           "org.scalatestplus.play" %% "scalatestplus-play" % "5.1.0" % Test
-          ),
+        ),
     Test / javaOptions ++= Seq(
       "--add-exports=java.base/sun.security.x509=ALL-UNNAMED",
       "--add-opens=java.base/sun.security.ssl=ALL-UNNAMED"
@@ -48,5 +47,8 @@ lazy val root = (project in file("."))
     ),
     dockerBaseImage := "azul/zulu-openjdk:19-jre-headless",
     dockerExposedPorts ++= Seq(9000),
-    addCommandAlias("devReload", "~ reStart --- -Dconfig.resource=application.dev.conf -DliveReload=true")
+    addCommandAlias(
+      "devReload",
+      "~ reStart --- -Dconfig.resource=application.dev.conf -DliveReload=true"
+    )
   )
