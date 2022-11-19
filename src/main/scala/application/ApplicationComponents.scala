@@ -13,7 +13,26 @@ class ApplicationComponents(context: Context)
     with play.filters.HttpFiltersComponents
     with Routes {
 
-  flywayPlayInitializer
+  if (Option(System.getProperty("liveReload")).contains("true")) {
+    try {
+      flywayPlayInitializer
+    } catch {
+      case e: Exception =>
+        e.printStackTrace(System.err)
+        System.err.println(
+          """
+            |
+            |=================
+            |
+            |Migrations failed, fix them and save again
+            |
+            |=================
+            |
+            |""".stripMargin)
+    }
+  } else {
+    flywayPlayInitializer
+  }
 
   val database: Database = dbApi.database("default")
 
