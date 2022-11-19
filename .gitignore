@@ -7,3 +7,5 @@ target
 .metals
 .bloop
 metals.sbt
+*.mv.db
+*.trace.db
