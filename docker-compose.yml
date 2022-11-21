@@ -12,7 +12,7 @@ services:
     ports:
       - '5432:5432'
   keycloak:
-    image: bitnami/keycloak:latest
+    image: bitnami/keycloak:19.0.3
     restart: unless-stopped
     environment:
       - KEYCLOAK_DATABASE_HOST=db
