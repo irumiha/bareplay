@@ -15,6 +15,9 @@ trait Routes
     Router.from {
       case GET(p"/")        => homeController.index
       case GET(p"/counter") => visitCounterController.visitCount
+
+      case GET(p"/security/oauth/callback") => securityController.oauthCallback
+
       case GET(p"/assets/$file*") =>
         assets.versioned(path = "/public", file = file)
     }
