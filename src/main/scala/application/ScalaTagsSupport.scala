@@ -1,16 +1,16 @@
 package application
 
+import akka.util.ByteString
 import play.api.http.{ContentTypeOf, ContentTypes, Writeable}
-import play.api.mvc.Codec
 import scalatags.Text.all.Tag
 
 trait ScalaTagsSupport {
-  implicit def contentTypeOfTag(implicit codec: Codec): ContentTypeOf[Tag] = {
+  implicit def contentTypeOfTag: ContentTypeOf[Tag] = {
     ContentTypeOf[Tag](Some(ContentTypes.HTML))
   }
 
-  implicit def writeableOfTag(implicit codec: Codec): Writeable[Tag] = {
-    Writeable(tag => codec.encode("<!DOCTYPE html>\n" + tag.render))
+  implicit def writeableOfTag: Writeable[Tag] = {
+    Writeable(tag => ByteString("<!DOCTYPE html>\n" + tag.render))
   }
 }
 
