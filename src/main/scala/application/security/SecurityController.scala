@@ -17,8 +17,8 @@ class SecurityController(
 
   private val configuration =
     cfg.get[Oauth2OidcConfiguration]("security.oauth2_oidc")
-  private val nextUrlCookieName = cfg.get[String]("login_redirect_cookie_name")
-  private val sessionCookieName = cfg.get[String]("session_cookie_name")
+  private val nextUrlCookieName = cfg.get[String]("security.login_redirect_cookie_name")
+  private val sessionCookieName = cfg.get[String]("security.session_cookie_name")
 
   def oauthCallback: Action[AnyContent] = Action.async { request =>
     val redirectTarget = request.cookies.get(nextUrlCookieName)
@@ -57,10 +57,14 @@ class SecurityController(
         )
       )
       .flatMap { response =>
-        response.json.validate[KeycloakTokenResponse] match {
-          case JsSuccess(value, _) => Future.successful(value)
-          case JsError(errors) =>
-            Future.failed[KeycloakTokenResponse](new Exception(errors.toString()))
+        if (response.status == 200) {
+          response.json.validate[KeycloakTokenResponse] match {
+            case JsSuccess(value, _) => Future.successful(value)
+            case JsError(errors) =>
+              Future.failed[KeycloakTokenResponse](new Exception(errors.toString()))
+          }
+        } else {
+          Future.failed[KeycloakTokenResponse](new Exception(response.body))
         }
       }
   }
