@@ -1,7 +1,7 @@
 package application.modules
 
 import akka.actor.ActorSystem
-import application.security.SecurityController
+import application.security.{SecurityActionWrapper, SecurityController, UserAuthenticatedBuilder}
 import application.{DatabaseExecutionContext, DatabaseExecutionContextImpl}
 import controllers.{HomeController, VisitCounterController}
 import models.AccessCounterRepository
@@ -9,7 +9,7 @@ import play.api.Configuration
 import play.api.db.Database
 import play.api.i18n.Langs
 import play.api.libs.ws.WSClient
-import play.api.mvc.ControllerComponents
+import play.api.mvc.{AnyContent, BodyParser, ControllerComponents}
 
 trait AllControllersAndServicesModule {
   import com.softwaremill.macwire._
@@ -17,12 +17,13 @@ trait AllControllersAndServicesModule {
   lazy val homeController: HomeController = wire[HomeController]
   lazy val visitCounterController: VisitCounterController = wire[VisitCounterController]
   lazy val securityController: SecurityController = wire[SecurityController]
-
   lazy val databaseExecutionContext: DatabaseExecutionContext =
     wire[DatabaseExecutionContextImpl]
 
   lazy val accessCounterRepository: AccessCounterRepository = wire[AccessCounterRepository]
 
+  lazy val userAuthenticatedBuilder: UserAuthenticatedBuilder = wire[UserAuthenticatedBuilder]
+  lazy val securityActionWrapper: SecurityActionWrapper = wire[SecurityActionWrapper]
 
   def actorSystem: ActorSystem
   def langs: Langs
@@ -30,5 +31,4 @@ trait AllControllersAndServicesModule {
   def database: Database
   def configuration: Configuration
   def wsClient: WSClient
-
 }

@@ -3,6 +3,7 @@ package application.security
 import play.api.Configuration
 import play.api.libs.json.{JsError, JsSuccess}
 import play.api.libs.ws.{WSAuthScheme, WSClient}
+import play.api.mvc.Security.AuthenticatedRequest
 import play.api.mvc._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -12,8 +13,10 @@ import scala.concurrent.duration.DurationInt
 class SecurityController(
     cc: ControllerComponents,
     cfg: Configuration,
-    ws: WSClient
-) extends AbstractController(cc) {
+    ws: WSClient,
+    userAuthBuilder: UserAuthenticatedBuilder
+) extends AbstractController(cc)
+    with play.api.Logging {
 
   private val configuration =
     cfg.get[Oauth2OidcConfiguration]("security.oauth2_oidc")
@@ -22,7 +25,6 @@ class SecurityController(
 
   def oauthCallback: Action[AnyContent] = Action.async { request =>
     val redirectTarget = request.cookies.get(nextUrlCookieName)
-
     request.queryString
       .get("code")
       .flatMap(_.headOption) match {
@@ -39,6 +41,7 @@ class SecurityController(
       case None => Future.successful(BadRequest("code query parameter is missing"))
     }
   }
+
 
   private def fetchToken(code: String): Future[KeycloakTokenResponse] = {
     ws
