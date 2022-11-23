@@ -9,8 +9,7 @@ val playComponents = Seq(
   "play-ahc-ws",
   "play-logback",
   "filters-helpers",
-  "play-jdbc",
-  "play-jdbc-evolutions"
+  "play-jdbc"
 ).map("com.typesafe.play" %% _ % playVersion)
 
 lazy val slick = taskKey[Seq[File]]("Generate Tables.scala")
