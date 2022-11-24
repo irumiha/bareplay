@@ -13,6 +13,7 @@ import scala.concurrent.Future
  * ALL REQUESTED ROLES MUST BE PRESENT IN JWT
  */
 trait RolesSecuredBlocks extends play.api.Logging {
+  // TODO return proper UI error page for Forbidden case
   type AuthenticatedBlock[A] = AuthenticatedRequest[A, Authentication] => Result
   def withRoles(
     roles: Set[String]

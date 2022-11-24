@@ -29,6 +29,7 @@ case class SecurityActionWrapper(
       if (matchingRoles.equals(roles)) {
         action(request)
       } else {
+        // TODO return proper UI error page for Forbidden case
         logger.warn(s"Roles mismatch, received: ${request.user.roles}, required: ${roles}")
         Future.successful(Forbidden)
       }
