@@ -6,7 +6,13 @@ import play.api.mvc.Security.AuthenticatedRequest
 
 import scala.concurrent.Future
 
-trait RolesSecuredBlocks {
+/**
+ * Both methods here wrap an existing action block by first checking for existence of a valid JWT in a cookie.
+ * If the JWT is valid then check the roles given in the "realm_access" \ "roles" claim.
+ *
+ * ALL REQUESTED ROLES MUST BE PRESENT IN JWT
+ */
+trait RolesSecuredBlocks extends play.api.Logging {
   type AuthenticatedBlock[A] = AuthenticatedRequest[A, Authentication] => Result
   def withRoles(
     roles: Set[String]
@@ -15,6 +21,7 @@ trait RolesSecuredBlocks {
     if (matchingRoles.equals(roles)) {
       block(request)
     } else {
+      logger.warn(s"Roles mismatch, received: ${request.user.roles}, required: ${roles}")
       Forbidden
     }
   }
@@ -27,6 +34,7 @@ trait RolesSecuredBlocks {
     if (matchingRoles.equals(roles)) {
       block(request)
     } else {
+      logger.warn(s"Roles mismatch, received: ${request.user.roles}, required: ${roles}")
       Future.successful(Forbidden)
     }
   }
