@@ -6,6 +6,7 @@ import play.api.http.{MimeTypes, Status}
 import play.api.mvc.Security.AuthenticatedBuilder
 import play.api.mvc._
 
+import java.util.UUID
 import scala.concurrent.ExecutionContext
 
 case class AuthenticationExtractor(config: Configuration) {
@@ -35,6 +36,8 @@ case class AuthenticationExtractor(config: Configuration) {
 
 case class Unauthenticated(configuration: Configuration) extends Status {
   private val authUri = configuration.get[String]("security.oauth2_oidc.auth_url")
+  private val clientId = configuration.get[String]("security.oauth2_oidc.client_id")
+  private val redirectUri = configuration.get[String]("security.oauth2_oidc.redirect_uri")
 
   /**
    * If the request was for a HTML page redirect to login page on Oauth2 provider,
@@ -44,7 +47,16 @@ case class Unauthenticated(configuration: Configuration) extends Status {
    */
   def respond(request: RequestHeader): Result = {
     if (request.accepts(MimeTypes.HTML) || request.accepts(MimeTypes.XHTML)) {
-      Results.Redirect(authUri, SEE_OTHER)
+      Results.Redirect(
+        authUri,
+        Map(
+          "scope"-> Seq("openid"),
+          "response_type" -> Seq("code"),
+          "client_id" -> Seq(clientId),
+          "redirect_uri" -> Seq(redirectUri),
+          "state"-> Seq(UUID.randomUUID().toString)
+          ),
+        SEE_OTHER)
     } else {
       Results.Unauthorized("")
     }
