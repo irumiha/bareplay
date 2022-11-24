@@ -1,23 +1,21 @@
 package application.security
 
-import play.api.mvc.Security.AuthenticatedRequest
-import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents, Result}
+import play.api.mvc.Action
+import play.api.mvc.Results.Forbidden
 
 import scala.concurrent.Future
 
-class SecurityActionWrapper(
-    cc: ControllerComponents,
+case class SecurityActionWrapper(
     userAuthBuilder: UserAuthenticatedBuilder
-) extends AbstractController(cc)
-    with play.api.Logging {
+) extends play.api.Logging {
 
-  def action(action: Action[AnyContent]): Action[AnyContent] =
-    userAuthBuilder.async { request =>
+  def apply[A](action: Action[A]): Action[A] =
+    userAuthBuilder.async(action.parser) { request =>
       action(request)
     }
 
-  def actionWithRoles(roles: Set[String])(action: Action[AnyContent]): Action[AnyContent] =
-    userAuthBuilder.async { request =>
+  def apply[A](roles: Set[String])(action: Action[A]): Action[A] =
+    userAuthBuilder.async(action.parser) { request =>
       val matchingRoles = request.user.roles intersect roles
       if (matchingRoles.equals(roles)) {
         action(request)
@@ -26,29 +24,4 @@ class SecurityActionWrapper(
         Future.successful(Forbidden)
       }
     }
-
-  def withRoles(
-      roles: Set[String]
-  )(block: AuthenticatedRequest[AnyContent, Authentication] => Result): Action[AnyContent] =
-    userAuthBuilder { request =>
-      val matchingRoles = request.user.roles intersect roles
-      if (matchingRoles.equals(roles)) {
-        block(request)
-      } else {
-        Forbidden
-      }
-    }
-
-  def withRolesAsync(
-      roles: Set[String]
-  )(block: AuthenticatedRequest[AnyContent, Authentication] => Future[Result]): Action[AnyContent] =
-    userAuthBuilder.async { request =>
-      val matchingRoles = request.user.roles intersect roles
-      if (matchingRoles.equals(roles)) {
-        block(request)
-      } else {
-        Future.successful(Forbidden)
-      }
-    }
-
 }

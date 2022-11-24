@@ -23,7 +23,7 @@ trait AllControllersAndServicesModule {
   lazy val accessCounterRepository: AccessCounterRepository = wire[AccessCounterRepository]
 
   lazy val userAuthenticatedBuilder: UserAuthenticatedBuilder = wire[UserAuthenticatedBuilder]
-  lazy val securityActionWrapper: SecurityActionWrapper = wire[SecurityActionWrapper]
+  lazy val securedAction: SecurityActionWrapper = wire[SecurityActionWrapper]
 
   def actorSystem: ActorSystem
   def langs: Langs

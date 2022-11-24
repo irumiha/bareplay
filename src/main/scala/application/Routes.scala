@@ -19,8 +19,8 @@ trait Routes
 
       case GET(p"/security/oauth/callback") => securityController.oauthCallback
 
-      case GET(p"/assets/$file*") =>
-        assets.versioned(path = "/public", file = file)
+      case GET(p"/assets/$file*") => assets.versioned(path = "/public", file = file)
+
     }
 
 }
