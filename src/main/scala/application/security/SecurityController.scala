@@ -3,7 +3,6 @@ package application.security
 import play.api.Configuration
 import play.api.libs.json.{JsError, JsSuccess}
 import play.api.libs.ws.{WSAuthScheme, WSClient}
-import play.api.mvc.Security.AuthenticatedRequest
 import play.api.mvc._
 
 import scala.concurrent.ExecutionContext.Implicits.global

@@ -1,6 +1,6 @@
 package application.security
 
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json._
 
 case class KeycloakTokenResponse(
     accessToken: String,
@@ -9,11 +9,11 @@ case class KeycloakTokenResponse(
     refreshToken: String,
     tokenType: String,
     idToken: String,
-    notBeforePolicy: Int,
     sessionState: String,
     scope: String
 )
 
 object KeycloakTokenResponse {
-  implicit val serde: Format[KeycloakTokenResponse] = Json.format[KeycloakTokenResponse]
+  implicit val config = JsonConfiguration(JsonNaming.SnakeCase)
+  implicit val serde: Reads[KeycloakTokenResponse] = Json.reads[KeycloakTokenResponse]
 }
