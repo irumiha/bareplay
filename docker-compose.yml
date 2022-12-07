@@ -26,3 +26,19 @@ services:
       - '8443:8443'
     depends_on:
       - db
+  app:
+    image: bareplay:1.0-SNAPSHOT
+    restart: unless-stopped
+    environment:
+      - APPLICATION_DB_DEFAULT_URL=jdbc:postgresql://db:5432/localdev
+      - APPLICATION_DB_DEFAULT_USERNAME=localdev
+      - APPLICATION_DB_DEFAULT_PASSWORD=localdev
+    ports:
+      - '9000:9000'
+    depends_on:
+      - keycloak
+      - db
+    deploy:
+      resources:
+        limits:
+          memory: 256M
