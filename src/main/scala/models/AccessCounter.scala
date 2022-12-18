@@ -29,27 +29,32 @@ class AccessCounterRepository(
     }
   }
 
-  def persistRow(accessCounterRow: AccessCounterRow): Future[Long] = Future {
+  def persistNew(accessCounterRow: AccessCounterRow): Future[AccessCounterRow] = Future {
     database.withConnection { implicit c =>
-      SQL"""insert into access_counter(counter) values (${accessCounterRow.counter})"""
-        .executeInsert(SqlParser.long(1).single)
+      SQL"""
+      insert into access_counter(counter) values (${accessCounterRow.counter})
+      RETURNING *
+      """.as(AccessCounterRow.rowParser.single)
     }
   }
 
-  def increment(counterId: Long): Future[Option[Long]] = Future {
+  def persistExisting(accessCounterRow: AccessCounterRow): Future[AccessCounterRow] = Future {
     database.withConnection { implicit c =>
-        SQL"""update access_counter
-          set counter=counter+1
-          where id = $counterId
-          returning counter"""
-        .as(SqlParser.long(1).singleOpt)
-        .orElse{
-          SQL"""
-              insert into access_counter(id, counter)
-              values ($counterId, 0)
-              returning counter"""
-          .as(SqlParser.long(1).singleOpt)
-        }
+      SQL"""
+        update access_counter
+        set counter = ${accessCounterRow.counter}, last_update=${accessCounterRow.lastUpdate}
+        where id = ${accessCounterRow.id}
+        RETURNING *
+        """.as(AccessCounterRow.rowParser.single)
+    }
+  }
+
+  def increment(counterId: Long): Future[Option[AccessCounterRow]] = Future {
+    database.withTransaction { implicit c =>
+      SQL"""
+      UPDATE access_counter SET counter=counter+1 where id=$counterId
+      RETURNING *
+  """.as(AccessCounterRow.rowParser.singleOpt)
     }
   }
 }

@@ -1,10 +1,16 @@
 package controllers
 
-import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
-import models.{AccessCounterRepository, AccessCounterRow}
+import akka.actor._
+import akka.pattern.ask
+import akka.util.Timeout
+import application.actors.CounterActor
+import com.softwaremill.tagging.@@
+import models.AccessCounterRow
 import play.api.libs.json.{Json, OFormat}
+import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.DurationInt
 
 case class VisitCounterResponse(count: Long)
 
@@ -14,16 +20,14 @@ object VisitCounterResponse {
 
 class VisitCounterController(
     cc: ControllerComponents,
-    accessCounterRepository: AccessCounterRepository
+    counterActor: ActorRef @@ CounterActor.Tag,
 ) extends AbstractController(cc) {
-
   def visitCount: Action[AnyContent] = Action.async { implicit request =>
-    accessCounterRepository
-      .increment(1)
-      .map { maybeCount =>
-        maybeCount.getOrElse(0L)
-      }
-      .map(c => Ok(Json.toJson(VisitCounterResponse(c))))
+    implicit val timeout: Timeout = 7.seconds
+
+    (counterActor ? CounterActor.IncrementCounter(1)).mapTo[AccessCounterRow].map { c =>
+      Ok(Json.toJson(VisitCounterResponse(c.counter)))
+    }
   }
 
 }

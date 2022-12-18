@@ -1,7 +1,7 @@
 ThisBuild / scalaVersion := "2.13.10"
 ThisBuild / version      := "1.0-SNAPSHOT"
 
-val playVersion  = "2.8.18"
+val playVersion = "2.8.18"
 val playComponents = Seq(
   "play",
   "play-akka-http-server",
@@ -31,8 +31,9 @@ lazy val root = (project in file("."))
           "org.flywaydb"             %% "flyway-play"        % "7.25.0",
           "com.github.jwt-scala"     %% "jwt-play-json"      % "9.1.2",
           "com.softwaremill.macwire" %% "macros"             % "2.5.8" % "provided",
+          "com.softwaremill.common"  %% "tagging"            % "2.3.4",
           "org.scalatestplus.play"   %% "scalatestplus-play" % "5.1.0" % Test
-          ),
+        ),
     Test / javaOptions ++= Seq(
       "--add-exports=java.base/sun.security.x509=ALL-UNNAMED",
       "--add-opens=java.base/sun.security.ssl=ALL-UNNAMED"
@@ -42,7 +43,7 @@ lazy val root = (project in file("."))
       "-deprecation",
       "-Xfatal-warnings"
     ),
-    dockerBaseImage := "ibm-semeru-runtimes:open-18-jre-jammy",
+    dockerBaseImage := "azul/zulu-openjdk:19-jre-headless",
     dockerExposedPorts ++= Seq(9000),
     addCommandAlias(
       "devReload",
