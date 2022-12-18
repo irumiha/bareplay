@@ -8,15 +8,19 @@ import play.api.routing.sird._
 
 trait Routes
     extends AllControllersAndServicesModule // Our controllers module
-    with AssetsComponents // Assets controller, serves static assets
+    with AssetsComponents                   // Assets controller, serves static assets
     with I18nComponents { // Languages and internationalization
 
   val router: Router =
     Router.from {
-      case GET(p"/")        => homeController.index
+      case GET(p"/")        => homeController.indexOpen
+      case GET(p"/secured") => homeController.indexSecured
       case GET(p"/counter") => visitCounterController.visitCount
-      case GET(p"/assets/$file*") =>
-        assets.versioned(path = "/public", file = file)
+
+      case GET(p"/security/oauth/callback") => securityController.oauthCallback
+
+      case GET(p"/assets/$file*") => assets.versioned(path = "/public", file = file)
+
     }
 
 }

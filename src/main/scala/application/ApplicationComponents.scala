@@ -3,6 +3,7 @@ package application
 import org.flywaydb.play.FlywayPlayComponents
 import play.api.ApplicationLoader.Context
 import play.api.db.{DBComponents, Database, HikariCPComponents}
+import play.api.libs.ws.ahc.AhcWSComponents
 import play.api.{Application, ApplicationLoader, BuiltInComponentsFromContext, LoggerConfigurator}
 
 class ApplicationComponents(context: Context)
@@ -11,28 +12,10 @@ class ApplicationComponents(context: Context)
     with DBComponents
     with HikariCPComponents
     with play.filters.HttpFiltersComponents
+    with AhcWSComponents
     with Routes {
 
-  if (Option(System.getProperty("liveReload")).contains("true")) {
-    try {
-      flywayPlayInitializer
-    } catch {
-      case e: Exception =>
-        e.printStackTrace(System.err)
-        System.err.println(
-          """
-            |
-            |=================
-            |
-            |Migrations failed, fix them and save again
-            |
-            |=================
-            |
-            |""".stripMargin)
-    }
-  } else {
-    flywayPlayInitializer
-  }
+  initializeMigrations
 
   val database: Database = dbApi.database("default")
 
@@ -40,6 +23,29 @@ class ApplicationComponents(context: Context)
     _.configure(context.environment, context.initialConfiguration, Map.empty)
   }
 
+  private def initializeMigrations = {
+    if (Option(System.getProperty("liveReload")).contains("true")) {
+      try {
+        flywayPlayInitializer
+      } catch {
+        case e: Exception =>
+          // Supress exceptions from bubbling up, to keep the application alive.
+          e.printStackTrace(System.err)
+          System.err.println(
+            """
+              |
+              |=================
+              |
+              |Migrations failed, fix them and save again
+              |
+              |=================
+              |
+              |""".stripMargin)
+      }
+    } else {
+      flywayPlayInitializer
+    }
+  }
 }
 
 class Loader extends ApplicationLoader {

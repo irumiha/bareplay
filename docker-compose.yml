@@ -11,8 +11,12 @@ services:
       - "./docker/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d"
     ports:
       - '5432:5432'
+    deploy:
+      resources:
+        limits:
+          memory: 256M
   keycloak:
-    image: bitnami/keycloak:latest
+    image: bitnami/keycloak:20.0.1
     restart: unless-stopped
     environment:
       - KEYCLOAK_DATABASE_HOST=db
@@ -26,3 +30,23 @@ services:
       - '8443:8443'
     depends_on:
       - db
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+  app:
+    image: bareplay:1.0-SNAPSHOT
+    restart: unless-stopped
+    environment:
+      - APPLICATION_DB_DEFAULT_URL=jdbc:postgresql://db:5432/localdev
+      - APPLICATION_DB_DEFAULT_USERNAME=localdev
+      - APPLICATION_DB_DEFAULT_PASSWORD=localdev
+    ports:
+      - '9000:9000'
+    depends_on:
+      - keycloak
+      - db
+    deploy:
+      resources:
+        limits:
+          memory: 256M

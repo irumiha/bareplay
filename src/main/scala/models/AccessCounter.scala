@@ -1,6 +1,5 @@
 package models
 
-import anorm.Macro.ColumnNaming
 import anorm._
 import application.DatabaseExecutionContext
 import play.api.db.Database
@@ -15,7 +14,7 @@ case class AccessCounterRow(
 )
 object AccessCounterRow {
   val rowParser: RowParser[AccessCounterRow] =
-    Macro.namedParser[AccessCounterRow](ColumnNaming.SnakeCase)
+    Macro.namedParser[AccessCounterRow](Macro.ColumnNaming.SnakeCase)
 }
 
 class AccessCounterRepository(
@@ -25,39 +24,31 @@ class AccessCounterRepository(
 
   def fetchById(counterId: Long): Future[Option[AccessCounterRow]] = Future {
     database.withConnection { implicit c =>
-      SQL("select * from access_counter where id = {id}")
-        .on("id" -> counterId)
+      SQL"""select * from access_counter where id = $counterId"""
         .as(AccessCounterRow.rowParser.singleOpt)
     }
   }
 
   def persistRow(accessCounterRow: AccessCounterRow): Future[Long] = Future {
     database.withConnection { implicit c =>
-      SQL("insert into access_counter(counter) values ({counter})")
-        .on("counter" -> accessCounterRow.counter)
+      SQL"""insert into access_counter(counter) values (${accessCounterRow.counter})"""
         .executeInsert(SqlParser.long(1).single)
     }
   }
 
   def increment(counterId: Long): Future[Option[Long]] = Future {
     database.withConnection { implicit c =>
-      SQL(
-        """update access_counter
-          |set counter=counter+1
-          |where id = {counterId}
-          |returning counter""".stripMargin
-      )
-        .on("counterId" -> counterId)
+        SQL"""update access_counter
+          set counter=counter+1
+          where id = $counterId
+          returning counter"""
         .as(SqlParser.long(1).singleOpt)
         .orElse{
-          SQL(
-            """
-              |insert into access_counter(id, counter)
-              |values ({counterId}, 0)
-              |returning counter""".stripMargin
-            ).on(
-            "counterId" -> counterId
-          ).as(SqlParser.long(1).singleOpt)
+          SQL"""
+              insert into access_counter(id, counter)
+              values ($counterId, 0)
+              returning counter"""
+          .as(SqlParser.long(1).singleOpt)
         }
     }
   }
