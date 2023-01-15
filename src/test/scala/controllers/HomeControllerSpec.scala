@@ -1,14 +1,11 @@
 package controllers
 
-import testsetup.TestedApplicationFactory
 import org.scalatestplus.play._
-import play.api.test._
 import play.api.test.Helpers._
+import play.api.test._
+import testsetup.PostgresContainerTest
 
-class HomeControllerSpec
-    extends PlaySpec
-    with BaseOneAppPerTest
-    with TestedApplicationFactory {
+class HomeControllerSpec extends PlaySpec with BaseOneAppPerTest with PostgresContainerTest {
 
   "Routes" should {
     "send 404 on a bad request" in {
@@ -29,4 +26,5 @@ class HomeControllerSpec
       contentAsString(home) must include("Welcome to Play")
     }
   }
+
 }

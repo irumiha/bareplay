@@ -1,11 +1,11 @@
 import org.scalatestplus.play._
-import testsetup.TestedApplicationFactory
+import testsetup.PostgresContainerTest
 
 class SeleniumSpec
     extends PlaySpec
     with BaseOneServerPerTest
     with OneBrowserPerTest
-    with TestedApplicationFactory
+    with PostgresContainerTest
     with HtmlUnitFactory {
 
   "SeleniumSpec" should {

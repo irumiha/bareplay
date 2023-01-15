@@ -1,7 +1,8 @@
 ThisBuild / scalaVersion := "2.13.10"
 ThisBuild / version      := "1.0-SNAPSHOT"
 
-val playVersion = "2.8.19"
+val playVersion           = "2.8.19"
+val testcontainersVersion = "1.17.6"
 val playComponents = Seq(
   "play",
   "play-akka-http-server",
@@ -30,9 +31,11 @@ lazy val root = (project in file("."))
           "ch.qos.logback"            % "logback-classic"    % "1.4.5",
           "org.flywaydb"             %% "flyway-play"        % "7.25.0",
           "com.github.jwt-scala"     %% "jwt-play-json"      % "9.1.2",
-          "com.softwaremill.macwire" %% "macros"             % "2.5.8" % "provided",
+          "com.softwaremill.macwire" %% "macros"             % "2.5.8"               % "provided",
           "com.softwaremill.common"  %% "tagging"            % "2.3.4",
-          "org.scalatestplus.play"   %% "scalatestplus-play" % "5.1.0" % Test
+          "org.scalatestplus.play"   %% "scalatestplus-play" % "5.1.0"               % Test,
+          "org.testcontainers"        % "testcontainers"     % testcontainersVersion % Test,
+          "org.testcontainers"        % "postgresql"         % testcontainersVersion % Test
         ),
     Test / javaOptions ++= Seq(
       "--add-exports=java.base/sun.security.x509=ALL-UNNAMED",

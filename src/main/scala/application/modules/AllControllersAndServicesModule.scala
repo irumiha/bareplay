@@ -1,7 +1,7 @@
 package application.modules
 
 import akka.actor.{ActorRef, ActorSystem, Props}
-import application.actors.CounterActor
+import actors.CounterActor
 import application.security.{SecurityActionWrapper, SecurityController, UserAuthenticatedBuilder}
 import application.{DatabaseExecutionContext, DatabaseExecutionContextImpl}
 import controllers.{HomeController, VisitCounterController}

@@ -1,4 +1,4 @@
-package application.actors
+package actors
 
 import akka.actor.Actor
 import models.{AccessCounterRepository, AccessCounterRow}

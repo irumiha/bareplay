@@ -3,7 +3,7 @@ package controllers
 import akka.actor._
 import akka.pattern.ask
 import akka.util.Timeout
-import application.actors.CounterActor
+import actors.CounterActor
 import com.softwaremill.tagging.@@
 import models.AccessCounterRow
 import play.api.libs.json.{Json, OFormat}

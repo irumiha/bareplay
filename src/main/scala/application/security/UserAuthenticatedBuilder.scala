@@ -83,6 +83,4 @@ class UserAuthenticatedBuilder(
       userinfo = AuthenticationExtractor(configuration).extract,
       defaultParser = cc.parsers.defaultBodyParser,
       onUnauthorized = Unauthenticated(configuration).respond
-    )(
-      ec
-    )
+    )(ec)
