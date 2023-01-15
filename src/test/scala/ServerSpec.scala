@@ -3,15 +3,17 @@ import org.scalatestplus.play._
 import play.api.mvc.Results
 import play.api.test.Helpers._
 import play.api.test.WsTestClient
-import testsetup.PostgresContainerTest
+import testsetup.{AllAppContainersTest, PostgresContainerTest}
 
 class ServerSpec
     extends PlaySpec
     with BaseOneServerPerSuite
-    with PostgresContainerTest
+    with AllAppContainersTest
     with Results
     with ScalaFutures
     with IntegrationPatience {
+
+  override val realmName = "test-realm"
 
   "Server query should" should {
     "work" in {

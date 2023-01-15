@@ -35,8 +35,18 @@ lazy val root = (project in file("."))
           "com.softwaremill.common"  %% "tagging"            % "2.3.4",
           "org.scalatestplus.play"   %% "scalatestplus-play" % "5.1.0"               % Test,
           "org.testcontainers"        % "testcontainers"     % testcontainersVersion % Test,
-          "org.testcontainers"        % "postgresql"         % testcontainersVersion % Test
+          "org.testcontainers"        % "postgresql"         % testcontainersVersion % Test,
+          "com.github.dasniko" % "testcontainers-keycloak" % "2.4.0" % Test
         ),
+    // testcontainers-keycloak brings latest Jackson. Force jackson versions to the ones supported by Play.
+    dependencyOverrides ++= Seq(
+      "com.fasterxml.jackson.core"   % "jackson-core"                    % "2.11.4",
+      "com.fasterxml.jackson.core"   % "jackson-annotations"             % "2.11.4",
+      "com.fasterxml.jackson.core"   % "jackson-databind"                % "2.11.4",
+      "com.fasterxml.jackson.jaxrs"  % "jackson-jaxrs-base"              % "2.11.4",
+      "com.fasterxml.jackson.jaxrs"  % "jackson-jaxrs-json-provider"     % "2.11.4",
+      "com.fasterxml.jackson.module" % "jackson-module-jaxb-annotations" % "2.11.4"
+    ),
     Test / javaOptions ++= Seq(
       "--add-exports=java.base/sun.security.x509=ALL-UNNAMED",
       "--add-opens=java.base/sun.security.ssl=ALL-UNNAMED"
