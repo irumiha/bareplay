@@ -1,9 +1,9 @@
-<!-- https://www.playframework.com/documentation/latest/SettingsLogger -->
 <configuration>
 
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
       <charset>UTF-8</charset>
+      <!-- Using a format similar to Heroku logfmt format, explained here https://brandur.org/logfmt -->
       <pattern>
         timestamp=%d{yyyy-MM-dd HH:mm:ss} severity=%level logger=%logger{36} message=%msg%n
       </pattern>

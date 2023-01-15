@@ -1,7 +1,7 @@
 ThisBuild / scalaVersion := "2.13.10"
 ThisBuild / version      := "1.0-SNAPSHOT"
 
-val playVersion = "2.8.18"
+val playVersion = "2.8.19"
 val playComponents = Seq(
   "play",
   "play-akka-http-server",
