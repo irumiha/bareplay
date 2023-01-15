@@ -8,7 +8,7 @@ import testsetup.PostgresContainerTest
 class HomeControllerSpec extends PlaySpec with BaseOneAppPerTest with PostgresContainerTest {
 
   "Routes" should {
-    "send 404 on a bad request" in {
+    "respond with a status 404 on a request to unknown URL" in {
       route(app, FakeRequest(GET, "/boum")).map(status(_)) mustBe Some(
         NOT_FOUND
       )
