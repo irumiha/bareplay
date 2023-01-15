@@ -1,6 +1,7 @@
 <configuration>
 
-  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+  <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+    <file>./target/test-logs/application-test.log</file>
     <encoder>
       <charset>UTF-8</charset>
       <!-- Using a format similar to Heroku logfmt format, explained here https://brandur.org/logfmt -->
@@ -10,19 +11,11 @@
     </encoder>
   </appender>
 
-  <appender name="ASYNCSTDOUT" class="ch.qos.logback.classic.AsyncAppender">
-    <appender-ref ref="STDOUT" />
-  </appender>
-
   <logger name="play" level="INFO" />
   <logger name="application" level="DEBUG" />
 
   <root level="WARN">
-    <appender-ref ref="ASYNCSTDOUT" />
+    <appender-ref ref="FILE" />
   </root>
 
 </configuration>
-
-
-
-
