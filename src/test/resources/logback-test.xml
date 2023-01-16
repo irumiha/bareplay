@@ -1,7 +1,7 @@
 <configuration>
 
   <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-    <file>./target/test-logs/application-test.log</file>
+    <file>./application-test.log</file>
     <encoder>
       <charset>UTF-8</charset>
       <!-- Using a format similar to Heroku logfmt format, explained here https://brandur.org/logfmt -->

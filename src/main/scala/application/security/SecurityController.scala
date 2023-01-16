@@ -12,8 +12,7 @@ import scala.concurrent.duration.DurationInt
 class SecurityController(
     cc: ControllerComponents,
     cfg: Configuration,
-    ws: WSClient,
-    userAuthBuilder: UserAuthenticatedBuilder
+    ws: WSClient
 ) extends AbstractController(cc)
     with play.api.Logging {
 

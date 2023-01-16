@@ -10,15 +10,15 @@ import java.util.UUID
 import scala.concurrent.ExecutionContext
 import scala.util.{Failure, Success}
 
-case class AuthenticationExtractor(config: Configuration) extends play.api.Logging {
+case class AuthenticationExtractor(config: Configuration, realmInfoService: RealmInfoService)
+    extends play.api.Logging {
   private val cookieName    = config.get[String]("security.session_cookie_name")
   private val allowedIssuer = config.get[String]("security.oauth2_oidc.token_issuer")
-  private val jwtPublicKey  = config.get[String]("security.oauth2_oidc.jwt_signing_public_key")
 
   def extract(request: RequestHeader): Option[Authentication] = {
     request.cookies.get(cookieName).flatMap { cookie =>
       JwtJson
-        .decodeJson(cookie.value, jwtPublicKey, Seq(JwtAlgorithm.RS256))
+        .decodeJson(cookie.value, realmInfoService.realmInfo.publicKey, Seq(JwtAlgorithm.RS256))
         .filter(c => (c \ "iss").as[String] == allowedIssuer)
         .map { claimsJson =>
           Authentication(
@@ -78,9 +78,12 @@ case class Unauthenticated(configuration: Configuration) extends Status {
 class UserAuthenticatedBuilder(
     cc: ControllerComponents,
     configuration: Configuration,
-    ec: ExecutionContext
+    ec: ExecutionContext,
+    realmInfoService: RealmInfoService
 ) extends AuthenticatedBuilder[Authentication](
-      userinfo = AuthenticationExtractor(configuration).extract,
+      userinfo = AuthenticationExtractor(configuration, realmInfoService).extract,
       defaultParser = cc.parsers.defaultBodyParser,
       onUnauthorized = Unauthenticated(configuration).respond
-    )(ec)
+    )(
+      ec
+    )

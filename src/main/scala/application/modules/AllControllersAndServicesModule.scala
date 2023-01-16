@@ -2,7 +2,7 @@ package application.modules
 
 import akka.actor.{ActorRef, ActorSystem, Props}
 import actors.CounterActor
-import application.security.{SecurityActionWrapper, SecurityController, UserAuthenticatedBuilder}
+import application.security.{Oauth2OidcConfiguration, RealmInfoService, SecurityActionWrapper, SecurityController, UserAuthenticatedBuilder}
 import application.{DatabaseExecutionContext, DatabaseExecutionContextImpl}
 import controllers.{HomeController, VisitCounterController}
 import models.AccessCounterRepository
@@ -15,6 +15,12 @@ import play.api.mvc.ControllerComponents
 trait AllControllersAndServicesModule {
   import com.softwaremill.macwire._
   import com.softwaremill.tagging._
+
+  lazy val oauth2OidcConfiguration: Oauth2OidcConfiguration =
+    configuration.get[Oauth2OidcConfiguration]("security.oauth2_oidc")
+
+  lazy val realmInfoService: RealmInfoService =
+    new RealmInfoService(oauth2OidcConfiguration, wsClient)
 
   lazy val homeController: HomeController = wire[HomeController]
   lazy val visitCounterController: VisitCounterController = wire[VisitCounterController]
