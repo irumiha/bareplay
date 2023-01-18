@@ -14,12 +14,12 @@ trait PostgresContainerTest extends TestContainersApplicationFactory {
       .withTmpFs(tmpfsMount)
 
   protected def postgresContainerConfiguration: Map[String, Any] = Map(
-    "db.default.driver" -> "org.postgresql.Driver",
-    "db.default.url" -> postgresContainer.getJdbcUrl,
+    "db.default.driver"   -> "org.postgresql.Driver",
+    "db.default.url"      -> postgresContainer.getJdbcUrl,
     "db.default.username" -> postgresContainer.getUsername,
     "db.default.password" -> postgresContainer.getPassword
-    )
+  )
 
-  override def containers: Seq[GenericContainer[_]] = Seq(postgresContainer)
+  override def containers: Seq[GenericContainer[_]]     = Seq(postgresContainer)
   override def containerConfiguration: Map[String, Any] = postgresContainerConfiguration
 }

@@ -12,7 +12,7 @@ trait TestedApplicationFactory extends FakeApplicationFactory {
   }
 
   def build(): Application = {
-    val loader  = new Loader()
+    val loader = new Loader()
     loader.load(applicationContext)
   }
 

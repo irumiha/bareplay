@@ -31,8 +31,7 @@ class ApplicationComponents(context: Context)
         case e: Exception =>
           // Supress exceptions from bubbling up, to keep the application alive.
           e.printStackTrace(System.err)
-          System.err.println(
-            """
+          System.err.println("""
               |
               |=================
               |

@@ -20,7 +20,7 @@ object VisitCounterResponse {
 
 class VisitCounterController(
     cc: ControllerComponents,
-    counterActor: ActorRef @@ CounterActor.Tag,
+    counterActor: ActorRef @@ CounterActor.Tag
 ) extends AbstractController(cc) {
   def visitCount: Action[AnyContent] = Action.async { implicit request =>
     implicit val timeout: Timeout = 7.seconds

@@ -2,7 +2,13 @@ package application.modules
 
 import akka.actor.{ActorRef, ActorSystem, Props}
 import actors.CounterActor
-import application.security.{Oauth2OidcConfiguration, RealmInfoService, SecurityActionWrapper, SecurityController, UserAuthenticatedBuilder}
+import application.security.{
+  Oauth2OidcConfiguration,
+  RealmInfoService,
+  SecurityActionWrapper,
+  SecurityController,
+  UserAuthenticatedBuilder
+}
 import application.{DatabaseExecutionContext, DatabaseExecutionContextImpl}
 import controllers.{HomeController, VisitCounterController}
 import models.AccessCounterRepository
@@ -22,9 +28,9 @@ trait AllControllersAndServicesModule {
   lazy val realmInfoService: RealmInfoService =
     new RealmInfoService(oauth2OidcConfiguration, wsClient)
 
-  lazy val homeController: HomeController = wire[HomeController]
+  lazy val homeController: HomeController                 = wire[HomeController]
   lazy val visitCounterController: VisitCounterController = wire[VisitCounterController]
-  lazy val securityController: SecurityController = wire[SecurityController]
+  lazy val securityController: SecurityController         = wire[SecurityController]
   lazy val databaseExecutionContext: DatabaseExecutionContext =
     wire[DatabaseExecutionContextImpl]
 
@@ -35,7 +41,7 @@ trait AllControllersAndServicesModule {
     .taggedWith[CounterActor.Tag]
 
   lazy val userAuthenticatedBuilder: UserAuthenticatedBuilder = wire[UserAuthenticatedBuilder]
-  lazy val securedAction: SecurityActionWrapper = wire[SecurityActionWrapper]
+  lazy val securedAction: SecurityActionWrapper               = wire[SecurityActionWrapper]
 
   def actorSystem: ActorSystem
   def langs: Langs

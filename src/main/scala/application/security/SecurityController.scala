@@ -40,7 +40,6 @@ class SecurityController(
     }
   }
 
-
   private def fetchToken(code: String): Future[KeycloakTokenResponse] = {
     ws
       .url(configuration.tokenUrl)

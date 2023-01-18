@@ -18,17 +18,17 @@ class CounterActor(accessCounterRepository: AccessCounterRepository) extends Act
 
   logger.info("Starting Counter Actor")
 
-  override def receive: Receive = {
-    case IncrementCounter(counterId) =>
-      val replyTo = sender()
+  override def receive: Receive = { case IncrementCounter(counterId) =>
+    val replyTo = sender()
 
-      longCounter += 1
+    longCounter += 1
 
-      if (longCounter % 1000 == 0) {
-        accessCounterRepository.persistExisting(AccessCounterRow(counterId, longCounter))
-          .foreach(result => replyTo ! result)
-      } else {
-        replyTo ! AccessCounterRow(1, longCounter)
-      }
+    if (longCounter % 1000 == 0) {
+      accessCounterRepository
+        .persistExisting(AccessCounterRow(counterId, longCounter))
+        .foreach(result => replyTo ! result)
+    } else {
+      replyTo ! AccessCounterRow(1, longCounter)
+    }
   }
 }

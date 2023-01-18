@@ -13,9 +13,9 @@ trait KeycloakContainerTest extends TestContainersApplicationFactory {
     "security.oauth2_oidc.auth_url" -> s"${keycloakContainer.getAuthServerUrl}/realms/$realmName/protocol/openid-connect/auth",
     "security.oauth2_oidc.token_url" -> s"${keycloakContainer.getAuthServerUrl}/realms/$realmName/protocol/openid-connect/token",
     "security.oauth2_oidc.token_issuer" -> s"${keycloakContainer.getAuthServerUrl}/realms/$realmName",
-    "security.oauth2_oidc.jwt_signing_public_key" -> s"",
-    )
+    "security.oauth2_oidc.jwt_signing_public_key" -> s""
+  )
 
-  override def containers: Seq[GenericContainer[_]] = Seq(keycloakContainer)
+  override def containers: Seq[GenericContainer[_]]     = Seq(keycloakContainer)
   override def containerConfiguration: Map[String, Any] = keycloakContainerConfiguration
 }
