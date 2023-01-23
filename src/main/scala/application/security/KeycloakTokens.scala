@@ -9,6 +9,10 @@ import play.api.libs.ws.{WSAuthScheme, WSClient}
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{ExecutionContext, Future}
 
+/**
+ * Utility class with methods to fetch initial set of tokens using the authorization code
+ * and to refresh the tokens usin the refresh token.
+ */
 class KeycloakTokens(
     cfg: Configuration,
     ws: WSClient,

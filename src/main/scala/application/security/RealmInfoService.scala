@@ -7,6 +7,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{Await, Future}
 
+/**
+ * Fetch (only once!) information from the realm endpoint.
+ *
+ * Currently used to retrieve the JWT token issuer public key.
+ */
 class RealmInfoService(cfg: Oauth2OidcConfiguration, ws: WSClient) {
   lazy val realmInfo: RealmInfo = {
     Await.result(requestRealmInfo, 6.seconds)

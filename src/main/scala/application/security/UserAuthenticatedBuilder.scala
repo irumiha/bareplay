@@ -184,7 +184,6 @@ class UserAuthenticatedBuilder(
    * @param request incoming request
    * @param refreshToken refresh token pulled from session cache
    * @param block action to execute with new Authentication
-   * @tparam A Content Type param
    * @return Future of result
    */
   private def refreshAccessTokenAndCallAction[A](

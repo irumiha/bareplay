@@ -16,6 +16,13 @@ class SecurityController(
   private val nextUrlCookieName = cfg.get[String]("security.login_redirect_cookie_name")
   private val sessionCookieName = cfg.get[String]("security.session_cookie_name")
 
+  /**
+   * Callback endpoint that wraps up the Oauth2 dance. This is where Keycloak sends the
+   * user after they successfully authenticate. Payload is authorization code we then
+   * use to get access and refresh tokens.
+   *
+   * @return
+   */
   def oauthCallback: Action[AnyContent] = Action.async { request =>
     val redirectTarget = request.cookies.get(nextUrlCookieName)
     request.queryString

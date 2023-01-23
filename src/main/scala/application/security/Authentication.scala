@@ -2,6 +2,9 @@ package application.security
 
 import play.api.libs.json.{Format, Json}
 
+/**
+ * Authentication information used inside our application.
+ */
 case class Authentication(
     identity: String, // sub field from JWT
     username: String,

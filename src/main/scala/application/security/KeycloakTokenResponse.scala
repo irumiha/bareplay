@@ -3,6 +3,9 @@ package application.security
 import play.api.libs.json.JsonConfiguration.Aux
 import play.api.libs.json._
 
+/**
+ * Response we get when calling the token endpoint on Keycloak
+ */
 case class KeycloakTokenResponse(
     accessToken: String,
     expiresIn: Int,
