@@ -1,14 +1,17 @@
 package application.security
 
-import pdi.jwt.{JwtAlgorithm, JwtJson}
+import com.softwaremill.tagging.@@
+import pdi.jwt.{JwtAlgorithm, JwtJson, JwtOptions}
 import play.api.Configuration
+import play.api.cache.AsyncCacheApi
 import play.api.http.{HeaderNames, MimeTypes, Status}
 import play.api.libs.json.JsObject
-import play.api.mvc.Security.AuthenticatedBuilder
+import play.api.mvc.Security.AuthenticatedRequest
 import play.api.mvc._
 
+import java.time.{Clock, Instant}
 import java.util.UUID
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
 
 /** Extracts authentication information from the incoming request.
@@ -18,8 +21,11 @@ import scala.util.{Failure, Success}
   * @param realmInfoService
   *   Access to realm info endpoint. Really needed just for the JWT issuer public key
   */
-case class AuthenticationExtractor(config: Configuration, realmInfoService: RealmInfoService)
-    extends play.api.Logging {
+case class AuthenticationExtractor(
+    config: Configuration,
+    realmInfoService: RealmInfoService,
+    clock: Clock
+) extends play.api.Logging {
   private val cookieName    = config.getOptional[String]("security.session_cookie_name")
   private val allowedIssuer = config.get[String]("security.oauth2_oidc.token_issuer")
 
@@ -41,10 +47,15 @@ case class AuthenticationExtractor(config: Configuration, realmInfoService: Real
     authorization.split("Bearer ").toList.drop(1).headOption
   }
 
-  private def decodeJwt(jwtValue: String): Option[Authentication] = {
+  private[security] def decodeJwt(jwtValue: String): Option[Authentication] = {
     val authentication =
       JwtJson
-        .decodeJson(jwtValue, realmInfoService.realmInfo.publicKey, Seq(JwtAlgorithm.RS256))
+        .decodeJson(
+          jwtValue,
+          realmInfoService.realmInfo.publicKey,
+          Seq(JwtAlgorithm.RS256),
+          JwtOptions.DEFAULT.copy(expiration = false)
+        )
         .filter(c => (c \ "iss").as[String] == allowedIssuer)
         .map(claimsToAuthentication)
 
@@ -63,6 +74,7 @@ case class AuthenticationExtractor(config: Configuration, realmInfoService: Real
       firstName = (claimsJson \ "given_name").asOpt[String].filterNot(_.isEmpty),
       familyName = (claimsJson \ "family_name").asOpt[String].filterNot(_.isEmpty),
       roles = (claimsJson \ "realm_access" \ "roles").as[Set[String]],
+      expired = !Instant.ofEpochSecond((claimsJson \ "exp").as[Long]).isAfter(Instant.now(clock)),
       attributes = Map.empty
     )
   }
@@ -120,12 +132,95 @@ case class Unauthenticated(configuration: Configuration) extends Status {
 class UserAuthenticatedBuilder(
     cc: ControllerComponents,
     configuration: Configuration,
-    ec: ExecutionContext,
-    realmInfoService: RealmInfoService
-) extends AuthenticatedBuilder[Authentication](
-      userinfo = AuthenticationExtractor(configuration, realmInfoService).extract,
-      defaultParser = cc.parsers.defaultBodyParser,
-      onUnauthorized = Unauthenticated(configuration).respond
-    )(
-      ec
+    realmInfoService: RealmInfoService,
+    sessionCache: AsyncCacheApi @@ Authentication,
+    keycloakTokens: KeycloakTokens,
+    clock: Clock
+)(override implicit val executionContext: ExecutionContext)
+    extends ActionBuilder[({ type R[A] = AuthenticatedRequest[A, Authentication] })#R, AnyContent] {
+  override def parser: BodyParser[AnyContent] = cc.parsers.defaultBodyParser
+
+  private val cookieName = configuration.get[String]("security.session_cookie_name")
+  private val userInfoExtractor = AuthenticationExtractor(
+    config = configuration,
+    realmInfoService = realmInfoService,
+    clock = clock
+  )
+
+  override def invokeBlock[A](
+      request: Request[A],
+      block: AuthenticatedRequest[A, Authentication] => Future[Result]
+  ): Future[Result] = authenticate(request, block)
+
+  private def authenticate[A](
+      request: Request[A],
+      block: AuthenticatedRequest[A, Authentication] => Future[Result]
+  ): Future[Result] = {
+    userInfoExtractor.extract(request) match {
+      case Some(auth) if !auth.expired =>
+        block(new AuthenticatedRequest(auth, request))
+      case Some(auth) if auth.expired =>
+        if (request.accepts(MimeTypes.HTML) || request.accepts(MimeTypes.XHTML)) {
+          sessionCache
+            .get[String](auth.identity)
+            .flatMap {
+              case Some(refreshToken) =>
+                refreshAccessTokenAndCallAction(request, refreshToken, block)
+              case None => Future.successful(Unauthenticated(configuration).respond(request))
+            }
+        } else {
+          Future.successful(Unauthenticated(configuration).respond(request))
+        }
+      case None => Future.successful(Unauthenticated(configuration).respond(request))
+      case _ => throw new Exception("Unexpected!") // to calm the compiler
+    }
+  }
+
+  /**
+   * Calls the Oauth2 Token endpoint to retrieve new access and refresh tokens.
+   * The newly retrieved access is then propagated to the action and the
+   * action response is augmented with a new cookie value.
+   *
+   * @param request incoming request
+   * @param refreshToken refresh token pulled from session cache
+   * @param block action to execute with new Authentication
+   * @tparam A Content Type param
+   * @return Future of result
+   */
+  private def refreshAccessTokenAndCallAction[A](
+    request: Request[A],
+    refreshToken: String,
+    block: AuthenticatedRequest[A, Authentication] => Future[Result]
+  ): Future[Result] = {
+    keycloakTokens
+      .refreshTokens(refreshToken)
+      .flatMap { newAuth =>
+        userInfoExtractor
+          .decodeJwt(newAuth.accessToken)
+          .map { authentication =>
+            block(new AuthenticatedRequest(authentication, request))
+              .map(_.withCookies(Cookie(cookieName, newAuth.accessToken)))
+          }
+          .getOrElse(Future.successful(Unauthenticated(configuration).respond(request)))
+      }
+  }
+}
+
+object UserAuthenticatedBuilder {
+  def build(
+      cc: ControllerComponents,
+      configuration: Configuration,
+      realmInfoService: RealmInfoService,
+      sessionCache: AsyncCacheApi @@ Authentication,
+      keycloakTokens: KeycloakTokens,
+      clock: Clock
+  )(implicit executionContext: ExecutionContext): UserAuthenticatedBuilder =
+    new UserAuthenticatedBuilder(
+      cc,
+      configuration,
+      realmInfoService,
+      sessionCache,
+      keycloakTokens,
+      clock
     )
+}

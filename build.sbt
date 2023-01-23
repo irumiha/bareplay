@@ -8,6 +8,7 @@ val playComponents = Seq(
   "play-akka-http-server",
   "play-ahc-ws",
   "play-logback",
+  "play-caffeine-cache",
   "filters-helpers",
   "play-jdbc"
 ).map("com.typesafe.play" %% _ % playVersion)
@@ -60,10 +61,6 @@ lazy val root = (project in file("."))
     dockerExposedPorts ++= Seq(9000),
     addCommandAlias(
       "devReload",
-      "~ reStart --- -Dconfig.resource=application.dev.conf -DliveReload=true"
+      "~ reStart --- -Dconfig.resource=application.conf -DliveReload=true"
     ),
-    addCommandAlias(
-      "devReloadPg",
-      "~ reStart --- -Dconfig.resource=application.dev-pg.conf -DliveReload=true"
-    )
   )

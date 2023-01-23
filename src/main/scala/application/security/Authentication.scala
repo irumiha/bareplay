@@ -8,7 +8,8 @@ case class Authentication(
     firstName: Option[String],
     familyName: Option[String],
     roles: Set[String],
-    attributes: Map[String, String]
+    attributes: Map[String, String],
+    expired: Boolean = false
 )
 object Authentication {
   implicit val serde: Format[Authentication] = Json.format[Authentication]
