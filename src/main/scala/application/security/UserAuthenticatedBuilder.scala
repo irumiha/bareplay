@@ -137,7 +137,8 @@ class UserAuthenticatedBuilder(
     keycloakTokens: KeycloakTokens,
     clock: Clock
 )(override implicit val executionContext: ExecutionContext)
-    extends ActionBuilder[({ type R[A] = AuthenticatedRequest[A, Authentication] })#R, AnyContent] {
+    extends ActionBuilder[({ type R[A] = AuthenticatedRequest[A, Authentication] })#R, AnyContent]
+    with play.api.Logging {
   override def parser: BodyParser[AnyContent] = cc.parsers.defaultBodyParser
 
   private val cookieName = configuration.get[String]("security.session_cookie_name")
@@ -160,19 +161,40 @@ class UserAuthenticatedBuilder(
       case Some(auth) if !auth.expired =>
         block(new AuthenticatedRequest(auth, request))
       case Some(auth) if auth.expired =>
-        if (request.accepts(MimeTypes.HTML) || request.accepts(MimeTypes.XHTML)) {
-          sessionCache
-            .get[String](auth.identity)
-            .flatMap {
-              case Some(refreshToken) =>
-                refreshAccessTokenAndCallAction(request, refreshToken, block)
-              case None => Future.successful(Unauthenticated(configuration).respond(request))
-            }
-        } else {
-          Future.successful(Unauthenticated(configuration).respond(request))
-        }
+        refreshTokensAndContinue(request, auth, block)
       case None => Future.successful(Unauthenticated(configuration).respond(request))
       case _ => throw new Exception("Unexpected!") // to calm the compiler
+    }
+  }
+
+  /**
+   * If the request is for HTML/XHTML content assume it is an ordinary browser
+   * and try to refresh the access token and return it in a new cookie.
+   */
+  private def refreshTokensAndContinue[A](
+    request: Request[A],
+    auth: Authentication,
+    block: AuthenticatedRequest[A, Authentication] => Future[Result]
+  ) = {
+    if (request.accepts(MimeTypes.HTML) || request.accepts(MimeTypes.XHTML)) {
+      sessionCache
+        .get[String](auth.identity)
+        .filter(_.isDefined)
+        .map(_.get)
+        .flatMap(refreshAccessToken)
+        .flatMap {
+          case (keycloakTokenResponse, Some(auth)) =>
+            block(new AuthenticatedRequest[A, Authentication](auth, request))
+              .map(_.withCookies(Cookie(cookieName, keycloakTokenResponse.accessToken)))
+          case _ => Future.successful(Unauthenticated(configuration).respond(request))
+        }
+        .recover {
+          case e: Throwable =>
+            logger.warn("Denying access", e)
+            Unauthenticated(configuration).respond(request)
+        }
+    } else {
+      Future.successful(Unauthenticated(configuration).respond(request))
     }
   }
 
@@ -181,26 +203,16 @@ class UserAuthenticatedBuilder(
    * The newly retrieved access is then propagated to the action and the
    * action response is augmented with a new cookie value.
    *
-   * @param request incoming request
    * @param refreshToken refresh token pulled from session cache
-   * @param block action to execute with new Authentication
-   * @return Future of result
    */
-  private def refreshAccessTokenAndCallAction[A](
-    request: Request[A],
-    refreshToken: String,
-    block: AuthenticatedRequest[A, Authentication] => Future[Result]
-  ): Future[Result] = {
+  private def refreshAccessToken[A](
+    refreshToken: String
+  ): Future[(KeycloakTokenResponse, Option[Authentication])] = {
     keycloakTokens
       .refreshTokens(refreshToken)
-      .flatMap { newAuth =>
-        userInfoExtractor
-          .decodeJwt(newAuth.accessToken)
-          .map { authentication =>
-            block(new AuthenticatedRequest(authentication, request))
-              .map(_.withCookies(Cookie(cookieName, newAuth.accessToken)))
-          }
-          .getOrElse(Future.successful(Unauthenticated(configuration).respond(request)))
+      .map { newAuth =>
+        val decoded = userInfoExtractor.decodeJwt(newAuth.accessToken)
+        (newAuth, decoded)
       }
   }
 }
