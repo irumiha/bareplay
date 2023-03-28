@@ -3,9 +3,9 @@ package controllers
 import org.scalatestplus.play._
 import play.api.test.Helpers._
 import play.api.test._
-import testsetup.PostgresContainerTest
+import testsetup.PostgresTest
 
-class HomeControllerSpec extends PlaySpec with BaseOneAppPerTest with PostgresContainerTest {
+class HomeControllerSpec extends PlaySpec with BaseOneAppPerTest with PostgresTest {
 
   "Routes" should {
     "respond with a status 404 on a request to unknown URL" in {

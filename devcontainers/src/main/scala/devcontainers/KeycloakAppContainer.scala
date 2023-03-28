@@ -1,9 +1,9 @@
-package testsetup
+package devcontainers
 
 import dasniko.testcontainers.keycloak.KeycloakContainer
 import org.testcontainers.containers.GenericContainer
 
-trait KeycloakContainerTest extends TestContainersApplicationFactory {
+trait KeycloakAppContainer extends DevContainersComponent {
   def realmName: String
 
   protected val keycloakContainer: KeycloakContainer =

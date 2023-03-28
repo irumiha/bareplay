@@ -1,7 +1,8 @@
-package testsetup
+package devcontainers
+
 import org.testcontainers.containers.GenericContainer
 
-trait AllAppContainersTest extends PostgresContainerTest with KeycloakContainerTest {
+trait AllAppContainers extends PostgresAppContainer with KeycloakAppContainer {
 
   override def containers: Seq[GenericContainer[_]] = Seq(
     postgresContainer,

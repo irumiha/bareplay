@@ -3,12 +3,12 @@ import org.scalatestplus.play._
 import play.api.mvc.Results
 import play.api.test.Helpers._
 import play.api.test.WsTestClient
-import testsetup.{AllAppContainersTest, PostgresContainerTest}
+import testsetup.AllContainersTest
 
 class ServerSpec
     extends PlaySpec
     with BaseOneServerPerSuite
-    with AllAppContainersTest
+    with AllContainersTest
     with Results
     with ScalaFutures
     with IntegrationPatience {

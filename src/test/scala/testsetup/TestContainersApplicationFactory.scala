@@ -1,16 +1,14 @@
 package testsetup
+
 import akka.Done
 import akka.actor.CoordinatedShutdown
-import org.testcontainers.containers.GenericContainer
+import devcontainers.DevContainersComponent
 import play.api.{Application, ApplicationLoader, Configuration}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait TestContainersApplicationFactory extends TestedApplicationFactory {
-
-  def containers: Seq[GenericContainer[_]]
-  def containerConfiguration: Map[String, Any]
+trait TestContainersApplicationFactory extends TestedApplicationFactory with DevContainersComponent {
 
   override def applicationContext: ApplicationLoader.Context = {
     containers.foreach(c => c.start())

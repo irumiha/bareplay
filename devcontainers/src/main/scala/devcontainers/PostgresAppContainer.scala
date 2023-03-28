@@ -1,8 +1,8 @@
-package testsetup
+package devcontainers
 
 import org.testcontainers.containers.{GenericContainer, PostgreSQLContainer}
 
-trait PostgresContainerTest extends TestContainersApplicationFactory {
+trait PostgresAppContainer extends DevContainersComponent {
   // Testcontainers have an unusual API, even when used from Java.
   class PgContainer(imageName: String) extends PostgreSQLContainer[PgContainer](imageName)
 
