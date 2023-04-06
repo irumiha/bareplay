@@ -1,30 +1,45 @@
 package application
 
-import org.flywaydb.play.FlywayPlayComponents
+import com.typesafe.config.Config
+import org.flywaydb.core.Flyway
+import play.api.Configuration
+import play.api.db.Database
 
-trait MigrationsSupport extends FlywayPlayComponents {
-  protected def initializeMigrations(): Unit = {
+trait MigrationsSupport {
+  protected def initializeMigrations(config: Configuration): Unit = {
     if (Option(System.getProperty("liveReload")).contains("true")) {
       try {
-        flywayPlayInitializer
+        val flyway = flywayBaseConfiguration(config)
+          .cleanOnValidationError(true)
+          .load()
+        flyway.migrate()
       } catch {
         case e: Exception =>
           // Supress exceptions from bubbling up, to keep the application alive.
           e.printStackTrace(System.err)
-          System.err.println(
-            """
+          System.err.println("""
               |
               |=================
               |
-              |Migrations failed, fix them and save again
+              | Migrations failed, fix them and save again
               |
               |=================
               |
               |""".stripMargin)
       }
     } else {
-      flywayPlayInitializer
+      val flyway = flywayBaseConfiguration(config).load()
+      flyway.migrate()
     }
   }
 
+  private def flywayBaseConfiguration(config: Configuration) = {
+    Flyway
+      .configure()
+      .dataSource(
+        config.get[String]("db.default.url"),
+        config.get[String]("db.default.username"),
+        config.get[String]("db.default.password")
+        )
+  }
 }

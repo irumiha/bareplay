@@ -30,7 +30,7 @@ trait AllControllersAndServicesModule {
 
   // Module dependencies
   def sessionCache: AsyncCacheApi @@ Authentication
-  implicit val executionContext: ExecutionContext
+  implicit lazy val executionContext: ExecutionContext
   def actorSystem: ActorSystem
   def langs: Langs
   def controllerComponents: ControllerComponents
@@ -58,16 +58,16 @@ trait AllControllersAndServicesModule {
     .actorOf(Props(wire[CounterActor]), "counter-actor")
     .taggedWith[CounterActor.Tag]
 
-  lazy val userAuthenticatedBuilder: UserAuthenticatedBuilder = wireWith(
+  lazy val userAuthenticatedBuilder: UserAuthenticatedBuilder =
     UserAuthenticatedBuilder.build(
-      _: ControllerComponents,
-      _: Configuration,
-      _: RealmInfoService,
-      _: AsyncCacheApi @@ Authentication,
-      _: KeycloakTokens,
-      _: Clock
+      controllerComponents,
+      configuration,
+      realmInfoService,
+      sessionCache,
+      keycloakTokens,
+      clock
     )
-  )
+
   lazy val securedAction: SecurityActionWrapper = wire[SecurityActionWrapper]
 
 }

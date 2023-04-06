@@ -5,6 +5,8 @@ import play.api.Configuration
 import play.api.cache.AsyncCacheApi
 import play.api.libs.json._
 import play.api.libs.ws.{WSAuthScheme, WSClient}
+import play.api.libs.ws.DefaultBodyReadables._
+import play.api.libs.ws.DefaultBodyWritables._
 
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{ExecutionContext, Future}

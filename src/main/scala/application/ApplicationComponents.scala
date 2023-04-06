@@ -37,7 +37,7 @@ class ApplicationComponents(context: Context)
     _.configure(context.environment, context.initialConfiguration, Map.empty)
   }
 
-  initializeMigrations()
+  initializeMigrations(configuration)
 
 }
 

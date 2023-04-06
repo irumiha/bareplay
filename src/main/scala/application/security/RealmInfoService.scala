@@ -25,7 +25,7 @@ class RealmInfoService(cfg: Oauth2OidcConfiguration, ws: WSClient) {
       .flatMap(parseRealmInfo)
   }
 
-  private def parseRealmInfo = { resp: WSResponse =>
+  private def parseRealmInfo = { (resp: WSResponse) =>
     resp.json.validate[RealmInfo] match {
       case JsSuccess(value, _) => Future.successful(value)
       case JsError(errors) =>

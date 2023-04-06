@@ -1,17 +1,19 @@
 package application.security
 
 import com.softwaremill.tagging.@@
-import pdi.jwt.{JwtAlgorithm, JwtJson, JwtOptions}
+import pdi.jwt.{JwtAlgorithm, JwtJson4s, JwtOptions}
+import org.json4s.*
+import org.json4s.DefaultJsonFormats.*
 import play.api.Configuration
 import play.api.cache.AsyncCacheApi
 import play.api.http.{HeaderNames, MimeTypes, Status}
-import play.api.libs.json.JsObject
 import play.api.mvc.Security.AuthenticatedRequest
-import play.api.mvc._
+import play.api.mvc.*
 
 import java.time.{Clock, Instant}
 import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}
+import scala.language.postfixOps
 import scala.util.{Failure, Success}
 
 /** Extracts authentication information from the incoming request.
@@ -26,6 +28,7 @@ case class AuthenticationExtractor(
     realmInfoService: RealmInfoService,
     clock: Clock
 ) extends play.api.Logging {
+
   private val cookieName    = config.getOptional[String]("security.session_cookie_name")
   private val allowedIssuer = config.get[String]("security.oauth2_oidc.token_issuer")
 
@@ -49,14 +52,14 @@ case class AuthenticationExtractor(
 
   private[security] def decodeJwt(jwtValue: String): Option[Authentication] = {
     val authentication =
-      JwtJson
+      JwtJson4s
         .decodeJson(
           jwtValue,
           realmInfoService.realmInfo.publicKey,
           Seq(JwtAlgorithm.RS256),
           JwtOptions.DEFAULT.copy(expiration = false)
         )
-        .filter(c => (c \ "iss").as[String] == allowedIssuer)
+        .filter(j => (j \ "iss").as[String] == allowedIssuer)
         .map(claimsToAuthentication)
 
     authentication match {
@@ -67,17 +70,17 @@ case class AuthenticationExtractor(
     }
   }
 
-  private def claimsToAuthentication = { claimsJson: JsObject =>
+  private def claimsToAuthentication(claimsJson: JObject) =
     Authentication(
       identity = (claimsJson \ "sub").as[String],
       username = (claimsJson \ "preferred_username").as[String],
-      firstName = (claimsJson \ "given_name").asOpt[String].filterNot(_.isEmpty),
-      familyName = (claimsJson \ "family_name").asOpt[String].filterNot(_.isEmpty),
+      firstName = (claimsJson \ "given_name").as[Option[String]].filterNot(_.isEmpty),
+      familyName = (claimsJson \ "family_name").as[Option[String]].filterNot(_.isEmpty),
       roles = (claimsJson \ "realm_access" \ "roles").as[Set[String]],
       expired = !Instant.ofEpochSecond((claimsJson \ "exp").as[Long]).isAfter(Instant.now(clock)),
       attributes = Map.empty
     )
-  }
+
 
   /** Extract authentication information from request headers. If cookie name was given use it to
     * extract JWT, if cookie name was not provided or extraction failed, try the Authorization
@@ -205,7 +208,7 @@ class UserAuthenticatedBuilder(
    *
    * @param refreshToken refresh token pulled from session cache
    */
-  private def refreshAccessToken[A](
+  private def refreshAccessToken(
     refreshToken: String
   ): Future[(KeycloakTokenResponse, Option[Authentication])] = {
     keycloakTokens
