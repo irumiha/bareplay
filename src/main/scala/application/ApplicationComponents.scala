@@ -1,10 +1,7 @@
 package application
 
-import akka.Done
-import akka.actor.CoordinatedShutdown
 import application.security.Authentication
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import com.softwaremill.tagging.{@@, Tagger}
 import devcontainers.AllAppContainers
 import org.testcontainers.containers.GenericContainer
@@ -16,7 +13,6 @@ import play.api.libs.ws.ahc.AhcWSComponents
 import play.api.{Application, ApplicationLoader, BuiltInComponentsFromContext, Configuration, LoggerConfigurator}
 
 import java.time.Clock
-import scala.concurrent.Future
 
 class ApplicationComponents(context: Context)
   extends BuiltInComponentsFromContext(context)

@@ -1,9 +1,7 @@
 package application
 
-import com.typesafe.config.Config
 import org.flywaydb.core.Flyway
 import play.api.Configuration
-import play.api.db.Database
 
 trait MigrationsSupport {
   protected def initializeMigrations(config: Configuration): Unit = {

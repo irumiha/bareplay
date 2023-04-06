@@ -54,7 +54,8 @@ lazy val root = (project in file("."))
     scalacOptions ++= Seq(
       "-feature",
       "-deprecation",
-      "-Xfatal-warnings"
+      "-Xfatal-warnings",
+      "-Wunused:imports"
     ),
     dockerBaseImage := "azul/zulu-openjdk:19-jre-headless",
     dockerExposedPorts ++= Seq(9000),
