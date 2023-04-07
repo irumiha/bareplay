@@ -4,7 +4,7 @@ ThisBuild / libraryDependencySchemes ++= Seq(
   "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always
 )
 
-val playVersion           = "2.9.0-M3"
+val playVersion           = "2.9.0-M4"
 val testcontainersVersion = "1.17.6"
 val playComponents = Seq(
   "play",
@@ -21,7 +21,7 @@ lazy val devcontainers = (project in file("devcontainers"))
     libraryDependencies ++= Seq(
       "org.testcontainers" % "testcontainers"          % testcontainersVersion,
       "org.testcontainers" % "postgresql"              % testcontainersVersion,
-      "com.github.dasniko" % "testcontainers-keycloak" % "2.4.0"
+      "com.github.dasniko" % "testcontainers-keycloak" % "2.5.0"
     )
   )
 
@@ -39,8 +39,8 @@ lazy val root = (project in file("."))
           "com.github.jwt-scala"     %% "jwt-json4s-native"  % "9.2.0",
           "org.playframework.anorm"  %% "anorm"              % "2.7.0",
           "com.lihaoyi"              %% "scalatags"          % "0.12.0",
-          "org.flywaydb"              % "flyway-core"        % "9.16.0",
-          "org.postgresql"            % "postgresql"         % "42.5.4",
+          "org.flywaydb"              % "flyway-core"        % "9.16.3",
+          "org.postgresql"            % "postgresql"         % "42.6.0",
           "com.h2database"            % "h2"                 % "2.1.214",
           "ch.qos.logback"            % "logback-classic"    % "1.4.6",
           "com.softwaremill.macwire" %% "macros"             % "2.5.8"    % "provided",
@@ -55,7 +55,7 @@ lazy val root = (project in file("."))
       "-feature",
       "-deprecation",
       "-Xfatal-warnings",
-      "-Wunused:imports"
+      "-Wunused:imports,privates,locals"
     ),
     dockerBaseImage := "azul/zulu-openjdk:19-jre-headless",
     dockerExposedPorts ++= Seq(9000),
