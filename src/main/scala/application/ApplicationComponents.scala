@@ -8,17 +8,17 @@ import play.api.cache.caffeine.CaffeineCacheComponents
 import play.api.db.{DBComponents, Database, HikariCPComponents}
 import play.api.libs.ws.ahc.AhcWSComponents
 import play.api.*
-
+import play.filters.HttpFiltersComponents
 import java.time.Clock
 
 class ApplicationComponents(context: Context)
     extends BuiltInComponentsFromContext(context)
     with DBComponents
     with HikariCPComponents
-    with play.filters.HttpFiltersComponents
+    with HttpFiltersComponents
     with AhcWSComponents
-    with MigrationsSupport
     with CaffeineCacheComponents
+    with MigrationsSupport
     with Routes {
 
   lazy val database: Database                                    = dbApi.database("default")
