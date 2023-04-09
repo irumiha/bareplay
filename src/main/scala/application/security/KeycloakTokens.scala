@@ -1,8 +1,6 @@
 package application.security
 
-import com.softwaremill.tagging.@@
 import play.api.Configuration
-import play.api.cache.AsyncCacheApi
 import play.api.libs.json._
 import play.api.libs.ws.{WSAuthScheme, WSClient}
 import play.api.libs.ws.DefaultBodyWritables._
@@ -17,7 +15,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class KeycloakTokens(
     cfg: Configuration,
     ws: WSClient,
-    sessionCache: AsyncCacheApi @@ Authentication
+    sessionCache: AuthenticationCache
 ) {
   private val configuration =
     cfg.get[Oauth2OidcConfiguration]("security.oauth2_oidc")
@@ -59,7 +57,7 @@ class KeycloakTokens(
         if (response.status == 200) {
           response.json.validate[KeycloakTokenResponse] match {
             case JsSuccess(value, _) =>
-              sessionCache
+              sessionCache.cache
                 .set(value.accessToken, value.refreshToken, value.refreshExpiresIn.seconds)
                 .map(_ => value)
             case JsError(errors) =>

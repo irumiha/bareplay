@@ -1,4 +1,4 @@
-package views
+package pages
 
 import scalatags.Text.all._
 

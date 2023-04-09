@@ -1,9 +1,9 @@
 package controllers
 
 import application.security.{RolesSecuredBlocks, UserAuthenticatedBuilder}
+import pages.HomeViews
 import play.api.i18n.Langs
 import play.api.mvc._
-import views.HomeViews
 
 class HomeController(
     langs: Langs,

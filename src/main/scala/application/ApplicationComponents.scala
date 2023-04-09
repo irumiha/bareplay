@@ -1,8 +1,5 @@
 package application
 
-import application.security.Authentication
-
-import com.softwaremill.tagging.{@@, Tagger}
 import devcontainers.AllAppContainers
 import org.testcontainers.containers.GenericContainer
 import play.api.ApplicationLoader.Context
@@ -10,12 +7,12 @@ import play.api.cache.AsyncCacheApi
 import play.api.cache.caffeine.CaffeineCacheComponents
 import play.api.db.{DBComponents, Database, HikariCPComponents}
 import play.api.libs.ws.ahc.AhcWSComponents
-import play.api.{Application, ApplicationLoader, BuiltInComponentsFromContext, Configuration, LoggerConfigurator}
+import play.api.*
 
 import java.time.Clock
 
 class ApplicationComponents(context: Context)
-  extends BuiltInComponentsFromContext(context)
+    extends BuiltInComponentsFromContext(context)
     with DBComponents
     with HikariCPComponents
     with play.filters.HttpFiltersComponents
@@ -24,10 +21,9 @@ class ApplicationComponents(context: Context)
     with CaffeineCacheComponents
     with Routes {
 
-  lazy val database: Database = dbApi.database("default")
-  lazy val clock: Clock = Clock.systemUTC()
-  lazy val sessionCache: AsyncCacheApi @@ Authentication =
-    cacheApi("authentication").taggedWith[Authentication]
+  lazy val database: Database                                    = dbApi.database("default")
+  lazy val clock: Clock                                          = Clock.systemUTC()
+  override def cacheApiBuilder(cacheName: String): AsyncCacheApi = cacheApi(cacheName)
 
   LoggerConfigurator(context.environment.classLoader).foreach {
     _.configure(context.environment, context.initialConfiguration, Map.empty)

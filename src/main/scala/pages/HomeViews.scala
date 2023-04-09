@@ -1,7 +1,7 @@
-package views
+package pages
 
 import scalatags.Text.all._
-import views.BaseView.baseView
+import BaseView.baseView
 
 object HomeViews {
   def index: Tag =

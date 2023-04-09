@@ -55,12 +55,12 @@ lazy val root = (project in file("."))
       "-feature",
       "-deprecation",
       "-Xfatal-warnings",
-      "-Wunused:imports,privates,locals"
+      "-Wunused:imports,privates,locals",
     ),
     dockerBaseImage := "azul/zulu-openjdk:19-jre-headless",
     dockerExposedPorts ++= Seq(9000),
     addCommandAlias(
       "devReload",
-      "~ reStart --- -Dconfig.resource=application.conf -DliveReload=true"
+      "~ reStart --- -DliveReload=true"
     )
   )

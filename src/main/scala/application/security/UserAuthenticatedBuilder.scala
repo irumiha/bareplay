@@ -1,14 +1,12 @@
 package application.security
 
-import com.softwaremill.tagging.@@
-import pdi.jwt.{JwtAlgorithm, JwtJson4s, JwtOptions}
 import org.json4s.*
 import org.json4s.DefaultJsonFormats.*
+import pdi.jwt.{JwtAlgorithm, JwtJson4s, JwtOptions}
 import play.api.Configuration
-import play.api.cache.AsyncCacheApi
 import play.api.http.{HeaderNames, MimeTypes, Status}
-import play.api.mvc.Security.AuthenticatedRequest
 import play.api.mvc.*
+import play.api.mvc.Security.AuthenticatedRequest
 
 import java.time.{Clock, Instant}
 import java.util.UUID
@@ -23,7 +21,7 @@ import scala.util.{Failure, Success}
   * @param realmInfoService
   *   Access to realm info endpoint. Really needed just for the JWT issuer public key
   */
-case class AuthenticationExtractor(
+class AuthenticationExtractor(
     config: Configuration,
     realmInfoService: RealmInfoService,
     clock: Clock
@@ -136,7 +134,7 @@ class UserAuthenticatedBuilder(
     cc: ControllerComponents,
     configuration: Configuration,
     realmInfoService: RealmInfoService,
-    sessionCache: AsyncCacheApi @@ Authentication,
+    sessionCache: AuthenticationCache,
     keycloakTokens: KeycloakTokens,
     clock: Clock
 )(override implicit val executionContext: ExecutionContext)
@@ -146,9 +144,9 @@ class UserAuthenticatedBuilder(
 
   private val cookieName = configuration.get[String]("security.session_cookie_name")
   private val userInfoExtractor = AuthenticationExtractor(
-    config = configuration,
-    realmInfoService = realmInfoService,
-    clock = clock
+    configuration,
+    realmInfoService,
+    clock
   )
 
   override def invokeBlock[A](
@@ -180,7 +178,7 @@ class UserAuthenticatedBuilder(
     block: AuthenticatedRequest[A, Authentication] => Future[Result]
   ) = {
     if (request.accepts(MimeTypes.HTML) || request.accepts(MimeTypes.XHTML)) {
-      sessionCache
+      sessionCache.cache
         .get[String](auth.identity)
         .filter(_.isDefined)
         .map(_.get)
@@ -225,7 +223,7 @@ object UserAuthenticatedBuilder {
       cc: ControllerComponents,
       configuration: Configuration,
       realmInfoService: RealmInfoService,
-      sessionCache: AsyncCacheApi @@ Authentication,
+      sessionCache: AuthenticationCache,
       keycloakTokens: KeycloakTokens,
       clock: Clock
   )(implicit executionContext: ExecutionContext): UserAuthenticatedBuilder =

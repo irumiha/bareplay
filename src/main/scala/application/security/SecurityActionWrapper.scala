@@ -5,7 +5,7 @@ import play.api.mvc.Results.Forbidden
 
 import scala.concurrent.Future
 
-case class SecurityActionWrapper(
+class SecurityActionWrapper(
     userAuthBuilder: UserAuthenticatedBuilder
 ) extends play.api.Logging {
 
