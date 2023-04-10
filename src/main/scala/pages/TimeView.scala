@@ -1,11 +1,11 @@
 package pages
 
-import scalatags.Text.all._
+import scalatags.Text.all.*
 import BaseView.baseView
 
 import java.time.LocalDateTime
 
-object TimeView {
+object TimeView:
   def theTime(timeToShow: LocalDateTime, invocations: Int): Tag =
     baseView(
       "Time is",
@@ -15,4 +15,3 @@ object TimeView {
         )
       )
     )
-}

@@ -1,11 +1,10 @@
 package application.security
 
 import play.api.libs.json.JsonConfiguration.Aux
-import play.api.libs.json._
+import play.api.libs.json.*
 
-/**
- * Response we get when calling the token endpoint on Keycloak
- */
+/** Response we get when calling the token endpoint on Keycloak
+  */
 case class KeycloakTokenResponse(
     accessToken: String,
     expiresIn: Int,
@@ -17,7 +16,6 @@ case class KeycloakTokenResponse(
     scope: String
 )
 
-object KeycloakTokenResponse {
+object KeycloakTokenResponse:
   implicit val config: Aux[Json.MacroOptions]      = JsonConfiguration(JsonNaming.SnakeCase)
   implicit val serde: Reads[KeycloakTokenResponse] = Json.reads[KeycloakTokenResponse]
-}

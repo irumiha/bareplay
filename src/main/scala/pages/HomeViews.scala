@@ -1,9 +1,9 @@
 package pages
 
-import scalatags.Text.all._
+import scalatags.Text.all.*
 import BaseView.baseView
 
-object HomeViews {
+object HomeViews:
   def index: Tag =
     baseView(
       "Welcome to Play",
@@ -11,4 +11,3 @@ object HomeViews {
         h1("Welcome to Play!")
       )
     )
-}

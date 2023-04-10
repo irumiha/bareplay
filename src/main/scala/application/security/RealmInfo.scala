@@ -11,7 +11,6 @@ case class RealmInfo(
     tokensNotBefore: Int
 )
 
-object RealmInfo {
+object RealmInfo:
   implicit val config: Aux[Json.MacroOptions] = JsonConfiguration(JsonNaming.SnakeCase)
   implicit val serde: Reads[RealmInfo]        = Json.reads[RealmInfo]
-}

@@ -6,14 +6,13 @@ import play.api.Logging
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-object CounterActor {
+object CounterActor:
   trait Tag
 
   case class IncrementCounter(counterId: Long)
-}
 
-class CounterActor(accessCounterRepository: AccessCounterRepository) extends Actor with Logging {
-  import CounterActor._
+class CounterActor(accessCounterRepository: AccessCounterRepository) extends Actor with Logging:
+  import CounterActor.*
   var longCounter: Long = 0
 
   logger.info("Starting Counter Actor")
@@ -23,12 +22,9 @@ class CounterActor(accessCounterRepository: AccessCounterRepository) extends Act
 
     longCounter += 1
 
-    if (longCounter % 1000 == 0) {
+    if longCounter % 1000 == 0 then
       accessCounterRepository
         .persistExisting(AccessCounterRow(counterId, longCounter))
         .foreach(result => replyTo ! result)
-    } else {
-      replyTo ! AccessCounterRow(1, longCounter)
-    }
+    else replyTo ! AccessCounterRow(1, longCounter)
   }
-}

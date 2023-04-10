@@ -7,7 +7,7 @@ import scala.concurrent.Future
 
 class SecurityActionWrapper(
     userAuthBuilder: UserAuthenticatedBuilder
-) extends play.api.Logging {
+) extends play.api.Logging:
 
   /** Wraps an existing action by checking for existence of a valid JWT in a cookie
     */
@@ -24,12 +24,10 @@ class SecurityActionWrapper(
   def apply[A](roles: Set[String])(action: Action[A]): Action[A] =
     userAuthBuilder.async(action.parser) { request =>
       val matchingRoles = request.user.roles intersect roles
-      if (matchingRoles.equals(roles)) {
-        action(request)
-      } else {
+      if matchingRoles.equals(roles) then action(request)
+      else {
         // TODO return proper UI error page for Forbidden case
         logger.warn(s"Roles mismatch, received: ${request.user.roles}, required: $roles")
         Future.successful(Forbidden)
       }
     }
-}

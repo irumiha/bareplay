@@ -2,9 +2,8 @@ package application.security
 
 import play.api.libs.json.{Format, Json}
 
-/**
- * Authentication information used inside our application.
- */
+/** Authentication information used inside our application.
+  */
 case class Authentication(
     identity: String, // sub field from JWT
     username: String,
@@ -14,6 +13,5 @@ case class Authentication(
     attributes: Map[String, String],
     expired: Boolean = false
 )
-object Authentication {
+object Authentication:
   implicit val serde: Format[Authentication] = Json.format[Authentication]
-}

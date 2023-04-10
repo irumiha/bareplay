@@ -1,26 +1,27 @@
 package application.security
 
 import play.api.Configuration
-import play.api.libs.json._
+import play.api.libs.json.*
 import play.api.libs.ws.{WSAuthScheme, WSClient}
-import play.api.libs.ws.DefaultBodyWritables._
+import play.api.libs.ws.DefaultBodyWritables.*
 
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{ExecutionContext, Future}
 
-/**
- * Utility class with methods to fetch initial set of tokens using the authorization code
- * and to refresh the tokens usin the refresh token.
- */
+/** Utility class with methods to fetch initial set of tokens using the authorization code and to
+  * refresh the tokens usin the refresh token.
+  */
 class KeycloakTokens(
     cfg: Configuration,
     ws: WSClient,
     sessionCache: AuthenticationCache
-) {
+):
   private val configuration =
     cfg.get[Oauth2OidcConfiguration]("security.oauth2_oidc")
 
-  def refreshTokens(refreshToken: String)(implicit ec: ExecutionContext): Future[KeycloakTokenResponse] = {
+  def refreshTokens(refreshToken: String)(implicit
+      ec: ExecutionContext
+  ): Future[KeycloakTokenResponse] =
     queryTokenEndpoint(
       Map(
         "refresh_token" -> Seq(refreshToken),
@@ -29,9 +30,10 @@ class KeycloakTokens(
         "client_id"     -> Seq(configuration.clientId)
       )
     )
-  }
 
-  def fetchInitialTokens(code: String)(implicit ec: ExecutionContext): Future[KeycloakTokenResponse] = {
+  def fetchInitialTokens(
+      code: String
+  )(implicit ec: ExecutionContext): Future[KeycloakTokenResponse] =
     queryTokenEndpoint(
       Map(
         "code"         -> Seq(code),
@@ -39,11 +41,10 @@ class KeycloakTokens(
         "grant_type"   -> Seq("authorization_code")
       )
     )
-  }
 
   private def queryTokenEndpoint(
       postParams: Map[String, Seq[String]]
-  )(implicit ec: ExecutionContext): Future[KeycloakTokenResponse] = {
+  )(implicit ec: ExecutionContext): Future[KeycloakTokenResponse] =
     ws
       .url(configuration.tokenUrl)
       .withAuth(
@@ -54,19 +55,13 @@ class KeycloakTokens(
       .withRequestTimeout(5.seconds)
       .post(postParams)
       .flatMap { response =>
-        if (response.status == 200) {
-          response.json.validate[KeycloakTokenResponse] match {
+        if response.status == 200 then
+          response.json.validate[KeycloakTokenResponse] match
             case JsSuccess(value, _) =>
               sessionCache.cache
                 .set(value.accessToken, value.refreshToken, value.refreshExpiresIn.seconds)
                 .map(_ => value)
             case JsError(errors) =>
               Future.failed[KeycloakTokenResponse](new Exception(errors.toString()))
-          }
-        } else {
-          Future.failed[KeycloakTokenResponse](new Exception(response.body))
-        }
+        else Future.failed[KeycloakTokenResponse](new Exception(response.body))
       }
-  }
-
-}

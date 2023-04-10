@@ -1,8 +1,8 @@
 package pages
 
-import scalatags.Text.all._
+import scalatags.Text.all.*
 
-object BaseView {
+object BaseView:
   def baseView(pageTitle: String, content: Tag): Tag =
     html(
       lang := "en",
@@ -27,5 +27,3 @@ object BaseView {
         )
       )
     )
-
-}

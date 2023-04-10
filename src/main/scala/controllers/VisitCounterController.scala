@@ -1,6 +1,6 @@
 package controllers
 
-import akka.actor._
+import akka.actor.*
 import akka.pattern.ask
 import akka.util.Timeout
 import actors.CounterActor
@@ -14,14 +14,13 @@ import scala.concurrent.duration.DurationInt
 
 case class VisitCounterResponse(count: Long)
 
-object VisitCounterResponse {
+object VisitCounterResponse:
   implicit def jsonSerialize: OFormat[VisitCounterResponse] = Json.format[VisitCounterResponse]
-}
 
 class VisitCounterController(
     cc: ControllerComponents,
     counterActor: ActorRef @@ CounterActor.Tag
-) extends AbstractController(cc) {
+) extends AbstractController(cc):
   def visitCount: Action[AnyContent] = Action.async { implicit request =>
     implicit val timeout: Timeout = 7.seconds
 
@@ -29,5 +28,3 @@ class VisitCounterController(
       Ok(Json.toJson(VisitCounterResponse(c.counter)))
     }
   }
-
-}

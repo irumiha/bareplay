@@ -3,15 +3,15 @@ package application
 import org.flywaydb.core.Flyway
 import play.api.Configuration
 
-trait MigrationsSupport {
-  protected def initializeMigrations(config: Configuration): Unit = {
-    if (Option(System.getProperty("liveReload")).contains("true")) {
-      try {
+trait MigrationsSupport:
+  protected def initializeMigrations(config: Configuration): Unit =
+    if Option(System.getProperty("liveReload")).contains("true") then
+      try
         val flyway = flywayBaseConfiguration(config)
           .cleanOnValidationError(true)
           .load()
         flyway.migrate()
-      } catch {
+      catch
         case e: Exception =>
           // Supress exceptions from bubbling up, to keep the application alive.
           e.printStackTrace(System.err)
@@ -24,20 +24,16 @@ trait MigrationsSupport {
               |=================
               |
               |""".stripMargin)
-      }
-    } else {
+    else {
       val flyway = flywayBaseConfiguration(config).load()
       flyway.migrate()
     }
-  }
 
-  private def flywayBaseConfiguration(config: Configuration) = {
+  private def flywayBaseConfiguration(config: Configuration) =
     Flyway
       .configure()
       .dataSource(
         config.get[String]("db.default.url"),
         config.get[String]("db.default.username"),
         config.get[String]("db.default.password")
-        )
-  }
-}
+      )

@@ -1,6 +1,6 @@
 package models
 
-import anorm._
+import anorm.*
 import application.DatabaseExecutionContext
 import play.api.db.Database
 
@@ -12,15 +12,13 @@ case class AccessCounterRow(
     counter: Long = 0,
     lastUpdate: LocalDateTime = LocalDateTime.now()
 )
-object AccessCounterRow {
+
+object AccessCounterRow:
   val rowParser: RowParser[AccessCounterRow] =
     Macro.namedParser[AccessCounterRow](Macro.ColumnNaming.SnakeCase)
-}
 
-class AccessCounterRepository(
-    val database: Database,
-    dbCtx: DatabaseExecutionContext
-) extends BaseRepository(dbCtx) {
+class AccessCounterRepository(val database: Database, dbCtx: DatabaseExecutionContext)
+    extends BaseRepository(dbCtx):
 
   def fetchById(counterId: Long): Future[Option[AccessCounterRow]] = Future {
     database.withConnection { implicit c =>
@@ -57,4 +55,3 @@ class AccessCounterRepository(
   """.as(AccessCounterRow.rowParser.singleOpt)
     }
   }
-}

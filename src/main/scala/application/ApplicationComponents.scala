@@ -19,7 +19,7 @@ class ApplicationComponents(context: Context)
     with AhcWSComponents
     with CaffeineCacheComponents
     with MigrationsSupport
-    with Routes {
+    with Routes:
 
   lazy val database: Database                                    = dbApi.database("default")
   lazy val clock: Clock                                          = Clock.systemUTC()
@@ -31,22 +31,19 @@ class ApplicationComponents(context: Context)
 
   initializeMigrations(configuration)
 
-}
-
-class Loader extends ApplicationLoader {
+class Loader extends ApplicationLoader:
   def load(context: Context): Application = new ApplicationComponents(
     context
   ).application
-}
 
-class DevLoader extends ApplicationLoader with AllAppContainers {
+class DevLoader extends ApplicationLoader with AllAppContainers:
 
   override def realmName: String = "dev-realm"
 
-  override def containers: Seq[GenericContainer[_]] =
+  override def containers: Seq[GenericContainer[?]] =
     Seq(postgresContainer.withReuse(true), keycloakContainer.withReuse(true))
 
-  override def load(context: Context): Application = {
+  override def load(context: Context): Application =
     containers.foreach(c => c.start())
 
     val configurationFromContainers = Configuration.from(containerConfiguration)
@@ -58,5 +55,3 @@ class DevLoader extends ApplicationLoader with AllAppContainers {
     new ApplicationComponents(
       devContext
     ).application
-  }
-}

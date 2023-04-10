@@ -16,7 +16,7 @@ import play.api.mvc.ControllerComponents
 import java.time.Clock
 import scala.concurrent.ExecutionContext
 
-trait AllControllersAndServicesModule {
+trait AllControllersAndServicesModule:
 
   import com.softwaremill.macwire.*
   import com.softwaremill.tagging.*
@@ -64,5 +64,3 @@ trait AllControllersAndServicesModule {
     )
 
   lazy val securedAction: SecurityActionWrapper = wire[SecurityActionWrapper]
-
-}
