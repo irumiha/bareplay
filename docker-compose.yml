@@ -4,9 +4,9 @@ services:
     image: postgres:15
     restart: unless-stopped
     environment:
-      - POSTGRES_USER=localdev
-      - POSTGRES_PASSWORD=localdev
-      - POSTGRES_DB=localdev
+      - POSTGRES_USER=db
+      - POSTGRES_PASSWORD=db
+      - POSTGRES_DB=db
     volumes:
       - "./docker/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d"
     ports:
@@ -16,15 +16,13 @@ services:
         limits:
           memory: 256M
   keycloak:
-    image: bitnami/keycloak:20.0.1
+    image: quay.io/keycloak/keycloak:21.0
     restart: unless-stopped
     environment:
-      - KEYCLOAK_DATABASE_HOST=db
-      - KEYCLOAK_DATABASE_NAME=localdev
-      - KEYCLOAK_DATABASE_USER=localdev
-      - KEYCLOAK_DATABASE_PASSWORD=localdev
-      - KEYCLOAK_DATABASE_SCHEMA=keycloak
-      - KEYCLOAK_ENABLE_STATISTICS=true
+      - KC_DB=postgres
+      - KC_DB_URL=jdbc:postgresql://db:5432/db
+      - KC_DB_USERNAME=db
+      - KC_DB_PASSWORD=db
     ports:
       - '8080:8080'
       - '8443:8443'
@@ -34,13 +32,15 @@ services:
       resources:
         limits:
           memory: 512M
+    command:
+      - start-dev
   app:
     image: bareplay:1.0-SNAPSHOT
     restart: unless-stopped
     environment:
-      - APPLICATION_DB_DEFAULT_URL=jdbc:postgresql://db:5432/localdev
-      - APPLICATION_DB_DEFAULT_USERNAME=localdev
-      - APPLICATION_DB_DEFAULT_PASSWORD=localdev
+      - APPLICATIONNAME_DB_DEFAULT_URL=jdbc:postgresql://db:5432/db
+      - APPLICATIONNAME_DB_DEFAULT_USERNAME=db
+      - APPLICATIONNAME_DB_DEFAULT_PASSWORD=db
     ports:
       - '9000:9000'
     depends_on:
@@ -50,3 +50,8 @@ services:
       resources:
         limits:
           memory: 256M
+    command:
+      - -J-XX:MaxRAM=150m
+      - -J-XX:+UseSerialGC
+      - -J-XX:+TieredCompilation
+      - -J-XX:TieredStopAtLevel=1

@@ -1,3 +1,5 @@
+import com.typesafe.sbt.packager.docker._
+
 ThisBuild / scalaVersion := "3.3.0-RC3"
 ThisBuild / version      := "1.0-SNAPSHOT"
 ThisBuild / libraryDependencySchemes ++= Seq(
@@ -26,7 +28,7 @@ lazy val devcontainers = (project in file("devcontainers"))
   )
 
 lazy val root = (project in file("."))
-  .enablePlugins(JavaServerAppPackaging, DockerPlugin)
+  .enablePlugins(JavaServerAppPackaging, DockerPlugin, AshScriptPlugin)
   .dependsOn(devcontainers)
   .settings(
     name                := """bareplay""",
@@ -55,10 +57,37 @@ lazy val root = (project in file("."))
       "-feature",
       "-deprecation",
       "-Xfatal-warnings",
-      "-Wunused:imports,privates,locals",
+      "-Wunused:imports,privates,locals"
     ),
-    dockerBaseImage := "azul/zulu-openjdk:19-jre-headless",
+    dockerBaseImage := "azul/zulu-openjdk-alpine:20",
     dockerExposedPorts ++= Seq(9000),
+    dockerCommands := dockerCommands.value.flatMap {
+      case DockerStageBreak => Seq(
+        ExecCmd("RUN", "apk", "add", "--no-cache", "binutils", "bash"),
+        ExecCmd(
+          "RUN",
+          "jlink",
+          "--add-modules",
+          "ALL-MODULE-PATH",
+          "--strip-debug",
+          "--no-man-pages",
+          "--no-header-files",
+          "--compress=2",
+          "--output",
+          "/jre"
+        ),
+        DockerStageBreak,
+        Cmd("FROM", "alpine:latest"),
+        Cmd("ENV", "JAVA_HOME=/jre"),
+        Cmd("ENV", """PATH="${JAVA_HOME}/bin:${PATH}""""),
+        Cmd("COPY", "--from=stage0", "/jre", """$JAVA_HOME"""),
+      )
+      case Cmd("FROM", args @_ *) if args.last == "mainstage" => Seq()
+      case ExecCmd("ENTRYPOINT", args @_ *) => Seq(
+        ExecCmd("ENTRYPOINT", args :+ "-Dconfig.resource=application-prod.conf" :_*)
+      )
+      case cmd => Seq(cmd)
+    },
     addCommandAlias(
       "devReload",
       "~ reStart --- -DliveReload=true"
