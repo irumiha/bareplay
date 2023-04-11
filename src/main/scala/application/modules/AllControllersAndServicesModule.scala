@@ -33,8 +33,9 @@ trait AllControllersAndServicesModule:
   def clock: Clock
 
   // Module components
-  lazy val oauth2OidcConfiguration: Oauth2OidcConfiguration =
-    configuration.get[Oauth2OidcConfiguration]("security.oauth2_oidc")
+  lazy val oauth2OidcConfiguration: Oauth2OidcConfiguration = wireWith(
+    Oauth2OidcConfiguration.build _
+  )
 
   lazy val databaseExecutionContext: DatabaseExecutionContext =
     wire[DatabaseExecutionContextImpl]
@@ -50,17 +51,10 @@ trait AllControllersAndServicesModule:
     .actorOf(Props(wire[CounterActor]), "counter-actor")
     .taggedWith[CounterActor.Tag]
 
-  lazy val sessionCache: AuthenticationCache =
-    AuthenticationCache(cacheApiBuilder("authentication"))
+  lazy val sessionCache: AuthenticationCache = AuthenticationCache(
+    cacheApiBuilder("authentication")
+  )
 
-  lazy val userAuthenticatedBuilder: UserAuthenticatedBuilder =
-    UserAuthenticatedBuilder.build(
-      controllerComponents,
-      configuration,
-      realmInfoService,
-      sessionCache,
-      keycloakTokens,
-      clock
-    )
+  lazy val userAuthenticatedBuilder: UserAuthenticatedBuilder = wire[UserAuthenticatedBuilder]
 
   lazy val securedAction: SecurityActionWrapper = wire[SecurityActionWrapper]

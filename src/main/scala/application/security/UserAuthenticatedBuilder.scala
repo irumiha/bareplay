@@ -195,21 +195,3 @@ class UserAuthenticatedBuilder(
         val decoded = userInfoExtractor.decodeJwt(newAuth.accessToken)
         (newAuth, decoded)
       }
-
-object UserAuthenticatedBuilder:
-  def build(
-      cc: ControllerComponents,
-      configuration: Configuration,
-      realmInfoService: RealmInfoService,
-      sessionCache: AuthenticationCache,
-      keycloakTokens: KeycloakTokens,
-      clock: Clock
-  )(implicit executionContext: ExecutionContext): UserAuthenticatedBuilder =
-    new UserAuthenticatedBuilder(
-      cc,
-      configuration,
-      realmInfoService,
-      sessionCache,
-      keycloakTokens,
-      clock
-    )

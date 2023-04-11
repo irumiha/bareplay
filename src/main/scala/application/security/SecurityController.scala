@@ -9,9 +9,8 @@ class SecurityController(
     cc: ControllerComponents,
     cfg: Configuration,
     keycloakTokens: KeycloakTokens
-) extends AbstractController(cc)
+)(implicit val ec: ExecutionContext) extends AbstractController(cc)
     with play.api.Logging:
-  implicit val ec: ExecutionContext = cc.executionContext
 
   private val nextUrlCookieName = cfg.get[String]("security.login_redirect_cookie_name")
   private val sessionCookieName = cfg.get[String]("security.session_cookie_name")

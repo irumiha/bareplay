@@ -11,8 +11,8 @@ import play.api.*
 import play.filters.HttpFiltersComponents
 import java.time.Clock
 
-class ApplicationComponents(context: Context)
-    extends BuiltInComponentsFromContext(context)
+trait ApplicationComponents
+    extends BuiltInComponents
     with DBComponents
     with HikariCPComponents
     with HttpFiltersComponents
@@ -25,16 +25,14 @@ class ApplicationComponents(context: Context)
   lazy val clock: Clock                                          = Clock.systemUTC()
   override def cacheApiBuilder(cacheName: String): AsyncCacheApi = cacheApi(cacheName)
 
-  LoggerConfigurator(context.environment.classLoader).foreach {
-    _.configure(context.environment, context.initialConfiguration, Map.empty)
-  }
-
   initializeMigrations(configuration)
 
 class Loader extends ApplicationLoader:
-  def load(context: Context): Application = new ApplicationComponents(
-    context
-  ).application
+  def load(context: Context): Application =
+    LoggerConfigurator(context.environment.classLoader).foreach {
+      _.configure(context.environment, context.initialConfiguration, Map.empty)
+    }
+    (new BuiltInComponentsFromContext(context) with ApplicationComponents).application
 
 class DevLoader extends ApplicationLoader with AllAppContainers:
 
@@ -52,6 +50,4 @@ class DevLoader extends ApplicationLoader with AllAppContainers:
       configurationFromContainers.withFallback(context.initialConfiguration)
     )
 
-    new ApplicationComponents(
-      devContext
-    ).application
+    (new BuiltInComponentsFromContext(devContext) with ApplicationComponents).application

@@ -1,7 +1,7 @@
 package application.security
 
 import com.typesafe.config.Config
-import play.api.ConfigLoader
+import play.api.{ConfigLoader, Configuration}
 
 case class Oauth2OidcConfiguration(
     clientId: String,
@@ -25,3 +25,6 @@ object Oauth2OidcConfiguration:
         redirectUri = oauthConfig.getString("redirect_uri"),
         tokenIssuer = oauthConfig.getString("token_issuer")
       )
+
+  def build(configuration: Configuration): Oauth2OidcConfiguration =
+    configuration.get[Oauth2OidcConfiguration]("security.oauth2_oidc")
