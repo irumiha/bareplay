@@ -59,11 +59,11 @@ lazy val root = (project in file("."))
       "-Xfatal-warnings",
       "-Wunused:imports,privates,locals"
     ),
-    dockerBaseImage := "azul/zulu-openjdk-alpine:20",
+    dockerBaseImage := "azul/zulu-openjdk-alpine:19",
     dockerExposedPorts ++= Seq(9000),
     dockerCommands := dockerCommands.value.flatMap {
       case DockerStageBreak => Seq(
-        ExecCmd("RUN", "apk", "add", "--no-cache", "binutils", "bash"),
+        ExecCmd("RUN", "apk", "add", "--no-cache", "binutils"),
         ExecCmd(
           "RUN",
           "jlink",
