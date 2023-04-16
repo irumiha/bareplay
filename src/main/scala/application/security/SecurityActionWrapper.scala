@@ -16,8 +16,8 @@ class SecurityActionWrapper(
       action(request)
     }
 
-  /** Wraps an existing action by checking for existence of a valid JWT in a cookie. If the JWT is
-    * valid then check the roles given in the "realm_access" \ "roles" claim.
+  /** Wraps an existing action by checking for existence of a valid JWT in a cookie. If
+    * the JWT is valid then check the roles given in the "realm_access" \ "roles" claim.
     *
     * ALL REQUESTED ROLES MUST BE PRESENT IN JWT
     */
@@ -25,9 +25,8 @@ class SecurityActionWrapper(
     userAuthBuilder.async(action.parser) { request =>
       val matchingRoles = request.user.roles intersect roles
       if matchingRoles.equals(roles) then action(request)
-      else {
+      else
         // TODO return proper UI error page for Forbidden case
         logger.warn(s"Roles mismatch, received: ${request.user.roles}, required: $roles")
         Future.successful(Forbidden)
-      }
     }

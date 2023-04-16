@@ -40,12 +40,13 @@ trait AllControllersAndServicesModule:
   lazy val databaseExecutionContext: DatabaseExecutionContext =
     wire[DatabaseExecutionContextImpl]
 
-  lazy val realmInfoService: RealmInfoService               = wire[RealmInfoService]
-  lazy val keycloakTokens: KeycloakTokens                   = wire[KeycloakTokens]
-  lazy val homeController: HomeController                   = wire[HomeController]
-  lazy val visitCounterController: VisitCounterController   = wire[VisitCounterController]
-  lazy val securityController: SecurityController           = wire[SecurityController]
-  lazy val accessCounterRepository: AccessCounterRepository = wire[AccessCounterRepository]
+  lazy val realmInfoService: RealmInfoService             = wire[RealmInfoService]
+  lazy val keycloakTokens: KeycloakTokens                 = wire[KeycloakTokens]
+  lazy val homeController: HomeController                 = wire[HomeController]
+  lazy val visitCounterController: VisitCounterController = wire[VisitCounterController]
+  lazy val securityController: SecurityController         = wire[SecurityController]
+  lazy val accessCounterRepository: AccessCounterRepository =
+    wire[AccessCounterRepository]
 
   lazy val counterActorRef: ActorRef @@ CounterActor.Tag = actorSystem
     .actorOf(Props(wire[CounterActor]), "counter-actor")
@@ -55,6 +56,7 @@ trait AllControllersAndServicesModule:
     cacheApiBuilder("authentication")
   )
 
-  lazy val userAuthenticatedBuilder: UserAuthenticatedBuilder = wire[UserAuthenticatedBuilder]
+  lazy val userAuthenticatedBuilder: UserAuthenticatedBuilder =
+    wire[UserAuthenticatedBuilder]
 
   lazy val securedAction: SecurityActionWrapper = wire[SecurityActionWrapper]

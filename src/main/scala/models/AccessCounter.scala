@@ -2,6 +2,7 @@ package models
 
 import anorm.*
 import application.DatabaseExecutionContext
+import play.api.Logging
 import play.api.db.Database
 
 import java.time.LocalDateTime
@@ -17,8 +18,8 @@ object AccessCounterRow:
   val rowParser: RowParser[AccessCounterRow] =
     Macro.namedParser[AccessCounterRow](Macro.ColumnNaming.SnakeCase)
 
-class AccessCounterRepository(val database: Database, dbCtx: DatabaseExecutionContext)
-    extends BaseRepository(dbCtx):
+class AccessCounterRepository(val database: Database)(using ec: DatabaseExecutionContext)
+    extends Logging:
 
   def fetchById(counterId: Long): Future[Option[AccessCounterRow]] = Future {
     database.withConnection { implicit c =>
@@ -36,16 +37,17 @@ class AccessCounterRepository(val database: Database, dbCtx: DatabaseExecutionCo
     }
   }
 
-  def persistExisting(accessCounterRow: AccessCounterRow): Future[AccessCounterRow] = Future {
-    database.withConnection { implicit c =>
-      SQL"""
+  def persistExisting(accessCounterRow: AccessCounterRow): Future[AccessCounterRow] =
+    Future {
+      database.withConnection { implicit c =>
+        SQL"""
         update access_counter
         set counter = ${accessCounterRow.counter}, last_update=${accessCounterRow.lastUpdate}
         where id = ${accessCounterRow.id}
         RETURNING *
         """.as(AccessCounterRow.rowParser.single)
+      }
     }
-  }
 
   def increment(counterId: Long): Future[Option[AccessCounterRow]] = Future {
     database.withTransaction { implicit c =>

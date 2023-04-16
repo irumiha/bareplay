@@ -11,7 +11,9 @@ object CounterActor:
 
   case class IncrementCounter(counterId: Long)
 
-class CounterActor(accessCounterRepository: AccessCounterRepository) extends Actor with Logging:
+class CounterActor(accessCounterRepository: AccessCounterRepository)
+    extends Actor
+    with Logging:
   import CounterActor.*
   var longCounter: Long = 0
 

@@ -70,13 +70,14 @@ class AuthenticationExtractor(
       firstName = (claimsJson \ "given_name").as[Option[String]].filterNot(_.isEmpty),
       familyName = (claimsJson \ "family_name").as[Option[String]].filterNot(_.isEmpty),
       roles = (claimsJson \ "realm_access" \ "roles").as[Set[String]],
-      expired = !Instant.ofEpochSecond((claimsJson \ "exp").as[Long]).isAfter(Instant.now(clock)),
+      expired =
+        !Instant.ofEpochSecond((claimsJson \ "exp").as[Long]).isAfter(Instant.now(clock)),
       attributes = Map.empty
     )
 
-  /** Extract authentication information from request headers. If cookie name was given use it to
-    * extract JWT, if cookie name was not provided or extraction failed, try the Authorization
-    * header.
+  /** Extract authentication information from request headers. If cookie name was given
+    * use it to extract JWT, if cookie name was not provided or extraction failed, try the
+    * Authorization header.
     *
     * @param request
     *   Incoming request
@@ -87,10 +88,11 @@ class AuthenticationExtractor(
     extractFromCookie(request) orElse extractFromAuthorization(request)
 
 case class Unauthenticated(configuration: Configuration) extends Status:
-  private val nextUrlCookieName = configuration.get[String]("security.login_redirect_cookie_name")
-  private val authUri           = configuration.get[String]("security.oauth2_oidc.auth_url")
-  private val clientId          = configuration.get[String]("security.oauth2_oidc.client_id")
-  private val redirectUri       = configuration.get[String]("security.oauth2_oidc.redirect_uri")
+  private val nextUrlCookieName =
+    configuration.get[String]("security.login_redirect_cookie_name")
+  private val authUri     = configuration.get[String]("security.oauth2_oidc.auth_url")
+  private val clientId    = configuration.get[String]("security.oauth2_oidc.client_id")
+  private val redirectUri = configuration.get[String]("security.oauth2_oidc.redirect_uri")
 
   private val redirectParams =
     Map(
@@ -101,8 +103,8 @@ case class Unauthenticated(configuration: Configuration) extends Status:
       "state"         -> Seq(UUID.randomUUID().toString)
     )
 
-  /** If the request was for a HTML page redirect to login page on Oauth2 provider, otherwise return
-    * Unauthorized (http status 401)
+  /** If the request was for a HTML page redirect to login page on Oauth2 provider,
+    * otherwise return Unauthorized (http status 401)
     * @param request
     *   Incoming request
     * @return
@@ -125,7 +127,10 @@ class UserAuthenticatedBuilder(
     keycloakTokens: KeycloakTokens,
     clock: Clock
 )(override implicit val executionContext: ExecutionContext)
-    extends ActionBuilder[({ type R[A] = AuthenticatedRequest[A, Authentication] })#R, AnyContent]
+    extends ActionBuilder[
+      ({ type R[A] = AuthenticatedRequest[A, Authentication] })#R,
+      AnyContent
+    ]
     with play.api.Logging:
   override def parser: BodyParser[AnyContent] = cc.parsers.defaultBodyParser
 
@@ -153,8 +158,8 @@ class UserAuthenticatedBuilder(
       case None => Future.successful(Unauthenticated(configuration).respond(request))
       case _    => throw new Exception("Unexpected!") // to calm the compiler
 
-  /** If the request is for HTML/XHTML content assume it is an ordinary browser and try to refresh
-    * the access token and return it in a new cookie.
+  /** If the request is for HTML/XHTML content assume it is an ordinary browser and try to
+    * refresh the access token and return it in a new cookie.
     */
   private def refreshTokensAndContinue[A](
       request: Request[A],
@@ -179,9 +184,9 @@ class UserAuthenticatedBuilder(
         }
     else Future.successful(Unauthenticated(configuration).respond(request))
 
-  /** Calls the Oauth2 Token endpoint to retrieve new access and refresh tokens. The newly retrieved
-    * access is then propagated to the action and the action response is augmented with a new cookie
-    * value.
+  /** Calls the Oauth2 Token endpoint to retrieve new access and refresh tokens. The newly
+    * retrieved access is then propagated to the action and the action response is
+    * augmented with a new cookie value.
     *
     * @param refreshToken
     *   refresh token pulled from session cache

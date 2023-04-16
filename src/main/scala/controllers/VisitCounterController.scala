@@ -15,7 +15,8 @@ import scala.concurrent.duration.DurationInt
 case class VisitCounterResponse(count: Long)
 
 object VisitCounterResponse:
-  implicit def jsonSerialize: OFormat[VisitCounterResponse] = Json.format[VisitCounterResponse]
+  implicit def jsonSerialize: OFormat[VisitCounterResponse] =
+    Json.format[VisitCounterResponse]
 
 class VisitCounterController(
     cc: ControllerComponents,

@@ -8,9 +8,11 @@ import play.api.{Application, ApplicationLoader, Configuration}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait TestContainersApplicationFactory extends TestedApplicationFactory with DevContainersComponent {
+trait TestContainersApplicationFactory
+    extends TestedApplicationFactory
+    with DevContainersComponent:
 
-  override def applicationContext: ApplicationLoader.Context = {
+  override def applicationContext: ApplicationLoader.Context =
     containers.foreach(c => c.start())
 
     val ac                          = super.applicationContext
@@ -19,26 +21,22 @@ trait TestContainersApplicationFactory extends TestedApplicationFactory with Dev
     ac.copy(initialConfiguration =
       configurationFromContainers.withFallback(ac.initialConfiguration)
     )
-  }
 
-  override def build(): Application = {
+  override def build(): Application =
     val builtApplication = super.build()
 
     builtApplication.coordinatedShutdown
-      .addTask(CoordinatedShutdown.PhaseActorSystemTerminate, "stop-testcontainers") { () =>
-        Future {
-          containers.foreach { c =>
-            try {
-              c.stop()
-            } catch {
-              case x: Exception =>
-                x.printStackTrace(System.err)
+      .addTask(CoordinatedShutdown.PhaseActorSystemTerminate, "stop-testcontainers") {
+        () =>
+          Future {
+            containers.foreach { c =>
+              try c.stop()
+              catch
+                case x: Exception =>
+                  x.printStackTrace(System.err)
             }
+            Done
           }
-          Done
-        }
       }
 
     builtApplication
-  }
-}

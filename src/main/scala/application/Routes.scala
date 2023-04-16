@@ -17,5 +17,5 @@ trait Routes
       case GET(p"/secured")                 => homeController.indexSecured
       case GET(p"/counter")                 => visitCounterController.visitCount
       case GET(p"/security/oauth/callback") => securityController.oauthCallback
-      case GET(p"/assets/$file*")           => assets.versioned(path = "/public", file = file)
+      case GET(p"/assets/$file*") => assets.versioned(path = "/public", file = file)
     }

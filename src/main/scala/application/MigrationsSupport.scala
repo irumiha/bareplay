@@ -24,10 +24,9 @@ trait MigrationsSupport:
               |=================
               |
               |""".stripMargin)
-    else {
+    else
       val flyway = flywayBaseConfiguration(config).load()
       flyway.migrate()
-    }
 
   private def flywayBaseConfiguration(config: Configuration) =
     Flyway

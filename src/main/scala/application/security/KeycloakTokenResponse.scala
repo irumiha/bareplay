@@ -17,5 +17,5 @@ case class KeycloakTokenResponse(
 )
 
 object KeycloakTokenResponse:
-  implicit val config: Aux[Json.MacroOptions]      = JsonConfiguration(JsonNaming.SnakeCase)
+  implicit val config: Aux[Json.MacroOptions] = JsonConfiguration(JsonNaming.SnakeCase)
   implicit val serde: Reads[KeycloakTokenResponse] = Json.reads[KeycloakTokenResponse]

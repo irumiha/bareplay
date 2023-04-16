@@ -21,8 +21,8 @@ trait ApplicationComponents
     with MigrationsSupport
     with Routes:
 
-  lazy val database: Database                                    = dbApi.database("default")
-  lazy val clock: Clock                                          = Clock.systemUTC()
+  lazy val database: Database = dbApi.database("default")
+  lazy val clock: Clock       = Clock.systemUTC()
   override def cacheApiBuilder(cacheName: String): AsyncCacheApi = cacheApi(cacheName)
 
   initializeMigrations(configuration)

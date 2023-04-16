@@ -1,4 +1,4 @@
-import org.scalatestplus.play._
+import org.scalatestplus.play.*
 import testsetup.PostgresTest
 
 class SeleniumSpec
@@ -6,7 +6,7 @@ class SeleniumSpec
     with BaseOneServerPerTest
     with OneBrowserPerTest
     with HtmlUnitFactory
-    with PostgresTest {
+    with PostgresTest:
 
   "SeleniumSpec" should {
 
@@ -17,4 +17,3 @@ class SeleniumSpec
       pageSource must include("Welcome to Play!")
     }
   }
-}

@@ -8,8 +8,8 @@ import play.api.libs.ws.DefaultBodyWritables.*
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{ExecutionContext, Future}
 
-/** Utility class with methods to fetch initial set of tokens using the authorization code and to
-  * refresh the tokens usin the refresh token.
+/** Utility class with methods to fetch initial set of tokens using the authorization code
+  * and to refresh the tokens usin the refresh token.
   */
 class KeycloakTokens(
     cfg: Configuration,
@@ -59,7 +59,11 @@ class KeycloakTokens(
           response.json.validate[KeycloakTokenResponse] match
             case JsSuccess(value, _) =>
               sessionCache.cache
-                .set(value.accessToken, value.refreshToken, value.refreshExpiresIn.seconds)
+                .set(
+                  value.accessToken,
+                  value.refreshToken,
+                  value.refreshExpiresIn.seconds
+                )
                 .map(_ => value)
             case JsError(errors) =>
               Future.failed[KeycloakTokenResponse](new Exception(errors.toString()))

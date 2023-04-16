@@ -9,15 +9,16 @@ class SecurityController(
     cc: ControllerComponents,
     cfg: Configuration,
     keycloakTokens: KeycloakTokens
-)(implicit val ec: ExecutionContext) extends AbstractController(cc)
+)(implicit val ec: ExecutionContext)
+    extends AbstractController(cc)
     with play.api.Logging:
 
   private val nextUrlCookieName = cfg.get[String]("security.login_redirect_cookie_name")
   private val sessionCookieName = cfg.get[String]("security.session_cookie_name")
 
-  /** Callback endpoint that wraps up the Oauth2 dance. This is where Keycloak sends the user after
-    * they successfully authenticate. Payload is authorization code we then use to get access and
-    * refresh tokens.
+  /** Callback endpoint that wraps up the Oauth2 dance. This is where Keycloak sends the
+    * user after they successfully authenticate. Payload is authorization code we then use
+    * to get access and refresh tokens.
     *
     * @return
     */
