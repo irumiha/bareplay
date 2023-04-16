@@ -1,29 +1,22 @@
 package application
 
 import org.flywaydb.core.Flyway
-import play.api.Configuration
+import play.api.{Configuration, Logging}
 
-trait MigrationsSupport:
+trait MigrationsSupport extends Logging:
   protected def initializeMigrations(config: Configuration): Unit =
-    if Option(System.getProperty("liveReload")).contains("true") then
+    if config.getOptional[Boolean]("db.migrations.devmode").getOrElse(false) then
       try
         val flyway = flywayBaseConfiguration(config)
+          .cleanDisabled(false)
           .cleanOnValidationError(true)
           .load()
         flyway.migrate()
       catch
         case e: Exception =>
-          // Supress exceptions from bubbling up, to keep the application alive.
-          e.printStackTrace(System.err)
-          System.err.println("""
-              |
-              |=================
-              |
-              | Migrations failed, fix them and save again
-              |
-              |=================
-              |
-              |""".stripMargin)
+          logger.error("Migrations failed: ", e)
+          if !config.getOptional[Boolean]("db.migrations.lenient").getOrElse(false) then
+            throw e
     else
       val flyway = flywayBaseConfiguration(config).load()
       flyway.migrate()

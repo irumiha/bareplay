@@ -88,8 +88,4 @@ lazy val root = (project in file("."))
       )
       case cmd => Seq(cmd)
     },
-    addCommandAlias(
-      "devReload",
-      "~ reStart --- -DliveReload=true"
-    )
   )
