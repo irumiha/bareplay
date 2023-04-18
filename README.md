@@ -44,4 +44,10 @@ We use `play.core.server.ProdServerStart` for both dev and prod.
 Here we use compile-time dependency injection with MacWire. It should be fairly simple to continue
 using Guice if you feel like it.
 
+### Keycloak dev realm
+
+## Users
+
+1. dev_admin_user/devadmin
+2. dev_regular_user/devregular
 

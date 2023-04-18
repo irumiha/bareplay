@@ -1,6 +1,6 @@
 package application.security
 
-import play.api.Configuration
+import play.api.{Configuration, Logging}
 import play.api.libs.json.*
 import play.api.libs.ws.{WSAuthScheme, WSClient}
 import play.api.libs.ws.DefaultBodyWritables.*
@@ -15,7 +15,7 @@ class KeycloakTokens(
     cfg: Configuration,
     ws: WSClient,
     sessionCache: AuthenticationCache
-):
+) extends Logging:
   private val configuration =
     cfg.get[Oauth2OidcConfiguration]("security.oauth2_oidc")
 
@@ -58,6 +58,7 @@ class KeycloakTokens(
         if response.status == 200 then
           response.json.validate[KeycloakTokenResponse] match
             case JsSuccess(value, _) =>
+              logger.debug(s"Received tokens: ${value}")
               sessionCache.cache
                 .set(
                   value.accessToken,

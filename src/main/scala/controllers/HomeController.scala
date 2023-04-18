@@ -14,8 +14,8 @@ class HomeController(
   import application.ScalaTagsSupport.*
 
   def indexSecured: Action[AnyContent] = secured {
-    withRoles(Set("ADMIN")) { request =>
-      Ok(HomeViews.index)
+    withRoles(Set("ADMIN_AREA")) { request =>
+      Ok(HomeViews.indexSecured(request.user.username, request.user.roles))
     }
   }
 
