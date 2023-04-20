@@ -44,7 +44,7 @@ lazy val root = (project in file("."))
           "org.flywaydb"              % "flyway-core"        % "9.16.3",
           "org.postgresql"            % "postgresql"         % "42.6.0",
           "com.h2database"            % "h2"                 % "2.1.214",
-          "ch.qos.logback"            % "logback-classic"    % "1.4.6",
+          "ch.qos.logback"            % "logback-classic"    % "1.4.7",
           "com.softwaremill.macwire" %% "macros"             % "2.5.8"    % "provided",
           "com.softwaremill.common"  %% "tagging"            % "2.3.4",
           "org.scalatestplus.play"   %% "scalatestplus-play" % "6.0.0-M3" % Test
