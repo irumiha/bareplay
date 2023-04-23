@@ -18,5 +18,5 @@ object HomeViews:
       div(
         h1("Welcome to Play!"),
         p(s"Logged in user is: ${username}, roles: ${roles}")
-        )
       )
+    )
