@@ -1,12 +1,12 @@
 import com.typesafe.sbt.packager.docker._
 
-ThisBuild / scalaVersion := "3.3.0-RC3"
+ThisBuild / scalaVersion := "3.3.0"
 ThisBuild / version      := "1.0-SNAPSHOT"
 ThisBuild / libraryDependencySchemes ++= Seq(
   "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always
 )
 
-val playVersion           = "2.9.0-M4"
+val playVersion           = "2.9.0-M6"
 val testcontainersVersion = "1.17.6"
 val playComponents = Seq(
   "play",
@@ -37,17 +37,17 @@ lazy val root = (project in file("."))
     libraryDependencies ++=
       playComponents ++
         Seq(
-          "com.typesafe.play"        %% "play-json"          % "2.10.0-RC7",
-          "com.github.jwt-scala"     %% "jwt-json4s-native"  % "9.2.0",
+          "com.typesafe.play"        %% "play-json"          % "2.10.0-RC9",
+          "com.github.jwt-scala"     %% "jwt-json4s-native"  % "9.4.0",
           "org.playframework.anorm"  %% "anorm"              % "2.7.0",
           "com.lihaoyi"              %% "scalatags"          % "0.12.0",
-          "org.flywaydb"              % "flyway-core"        % "9.16.3",
+          "org.flywaydb"              % "flyway-core"        % "9.19.4",
           "org.postgresql"            % "postgresql"         % "42.6.0",
           "com.h2database"            % "h2"                 % "2.1.214",
-          "ch.qos.logback"            % "logback-classic"    % "1.4.7",
+          "ch.qos.logback"            % "logback-classic"    % "1.4.8",
           "com.softwaremill.macwire" %% "macros"             % "2.5.8"    % "provided",
           "com.softwaremill.common"  %% "tagging"            % "2.3.4",
-          "org.scalatestplus.play"   %% "scalatestplus-play" % "6.0.0-M3" % Test
+          "org.scalatestplus.play"   %% "scalatestplus-play" % "6.0.0-M6" % Test
         ),
     Test / javaOptions ++= Seq(
       "--add-exports=java.base/sun.security.x509=ALL-UNNAMED",

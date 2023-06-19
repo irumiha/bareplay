@@ -27,7 +27,7 @@ Project structure is the usual `src/{main,test}/{scala,resources}` structure you
 
 #### There is no code generation step. 
 
-`routes` file is replaced with [SIRD](https://www.playframework.com/documentation/2.8.x/ScalaSirdRouter) router 
+`routes` file is replaced with a [SIRD](https://www.playframework.com/documentation/2.8.x/ScalaSirdRouter) router 
 definition, and Twirl templates are replaced with [ScalaTags](https://com-lihaoyi.github.io/scalatags/).
 
 Everything that was in the `conf` directory has moved to `src/main/resources`.
