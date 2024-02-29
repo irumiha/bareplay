@@ -1,6 +1,6 @@
 package actors
 
-import akka.actor.Actor
+import org.apache.pekko.actor.Actor
 import models.{AccessCounterRepository, AccessCounterRow}
 import play.api.Logging
 

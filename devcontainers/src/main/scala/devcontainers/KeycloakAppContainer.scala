@@ -16,6 +16,6 @@ trait KeycloakAppContainer extends DevContainersComponent {
     "security.oauth2_oidc.jwt_signing_public_key" -> s""
   )
 
-  override def containers: Seq[GenericContainer[_]]     = Seq(keycloakContainer)
+  override def containers: Seq[GenericContainer[?]]     = Seq(keycloakContainer)
   override def containerConfiguration: Map[String, Any] = keycloakContainerConfiguration
 }

@@ -20,6 +20,6 @@ trait PostgresAppContainer extends DevContainersComponent {
     "db.default.password" -> postgresContainer.getPassword
   )
 
-  override def containers: Seq[GenericContainer[_]]     = Seq(postgresContainer)
+  override def containers: Seq[GenericContainer[?]]     = Seq(postgresContainer)
   override def containerConfiguration: Map[String, Any] = postgresContainerConfiguration
 }

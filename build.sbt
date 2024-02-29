@@ -1,29 +1,29 @@
 import com.typesafe.sbt.packager.docker._
 
-ThisBuild / scalaVersion := "3.3.0"
+ThisBuild / scalaVersion := "3.4.0"
 ThisBuild / version      := "1.0-SNAPSHOT"
 ThisBuild / libraryDependencySchemes ++= Seq(
   "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always
 )
 
-val playVersion           = "2.9.0-M6"
-val testcontainersVersion = "1.17.6"
+val playVersion           = "3.0.1"
+val testcontainersVersion = "1.19.6"
 val playComponents = Seq(
   "play",
-  "play-netty-server",
+  "play-pekko-http-server",
+  "play-filters-helpers",
   "play-ahc-ws",
   "play-logback",
   "play-caffeine-cache",
-  "filters-helpers",
   "play-jdbc"
-).map("com.typesafe.play" %% _ % playVersion)
+).map("org.playframework" %% _ % playVersion)
 
 lazy val devcontainers = (project in file("devcontainers"))
   .settings(
     libraryDependencies ++= Seq(
       "org.testcontainers" % "testcontainers"          % testcontainersVersion,
       "org.testcontainers" % "postgresql"              % testcontainersVersion,
-      "com.github.dasniko" % "testcontainers-keycloak" % "2.5.0"
+      "com.github.dasniko" % "testcontainers-keycloak" % "3.2.0"
     )
   )
 
@@ -37,17 +37,17 @@ lazy val root = (project in file("."))
     libraryDependencies ++=
       playComponents ++
         Seq(
-          "com.typesafe.play"        %% "play-json"          % "2.10.0-RC9",
-          "com.github.jwt-scala"     %% "jwt-json4s-native"  % "9.4.0",
+          "com.typesafe.play"        %% "play-json"          % "2.10.4",
+          "com.github.jwt-scala"     %% "jwt-json4s-native"  % "10.0.0",
           "org.playframework.anorm"  %% "anorm"              % "2.7.0",
           "com.lihaoyi"              %% "scalatags"          % "0.12.0",
           "org.flywaydb"              % "flyway-core"        % "9.19.4",
-          "org.postgresql"            % "postgresql"         % "42.6.0",
-          "com.h2database"            % "h2"                 % "2.1.214",
-          "ch.qos.logback"            % "logback-classic"    % "1.4.8",
-          "com.softwaremill.macwire" %% "macros"             % "2.5.8"    % "provided",
+          "org.postgresql"            % "postgresql"         % "42.7.2",
+          "com.h2database"            % "h2"                 % "2.2.224",
+          "ch.qos.logback"            % "logback-classic"    % "1.5.0",
+          "com.softwaremill.macwire" %% "macros"             % "2.5.9"    % "provided",
           "com.softwaremill.common"  %% "tagging"            % "2.3.4",
-          "org.scalatestplus.play"   %% "scalatestplus-play" % "6.0.0-M6" % Test
+          "org.scalatestplus.play"   %% "scalatestplus-play" % "7.0.1" % Test
         ),
     Test / javaOptions ++= Seq(
       "--add-exports=java.base/sun.security.x509=ALL-UNNAMED",
@@ -57,9 +57,9 @@ lazy val root = (project in file("."))
       "-feature",
       "-deprecation",
       "-Xfatal-warnings",
-      "-Wunused:imports,privates,locals"
+      "-Wunused:imports,privates,locals",
     ),
-    dockerBaseImage := "azul/zulu-openjdk-alpine:19",
+    dockerBaseImage := "azul/zulu-openjdk-alpine:21",
     dockerExposedPorts ++= Seq(9000),
     dockerCommands := dockerCommands.value.flatMap {
       case DockerStageBreak => Seq(

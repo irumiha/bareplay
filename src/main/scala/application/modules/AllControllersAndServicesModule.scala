@@ -1,7 +1,7 @@
 package application.modules
 
 import actors.CounterActor
-import akka.actor.{ActorRef, ActorSystem, Props}
+import org.apache.pekko.actor.{ActorRef, ActorSystem, Props}
 import application.security.*
 import application.{DatabaseExecutionContext, DatabaseExecutionContextImpl}
 import controllers.{HomeController, VisitCounterController}
@@ -34,7 +34,7 @@ trait AllControllersAndServicesModule:
 
   // Module components
   lazy val oauth2OidcConfiguration: Oauth2OidcConfiguration = wireWith(
-    Oauth2OidcConfiguration.build _
+    Oauth2OidcConfiguration.build
   )
 
   lazy val databaseExecutionContext: DatabaseExecutionContext =

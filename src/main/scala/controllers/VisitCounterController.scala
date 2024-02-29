@@ -1,8 +1,8 @@
 package controllers
 
-import akka.actor.*
-import akka.pattern.ask
-import akka.util.Timeout
+import org.apache.pekko.actor.*
+import org.apache.pekko.pattern.ask
+import org.apache.pekko.util.Timeout
 import actors.CounterActor
 import com.softwaremill.tagging.@@
 import models.AccessCounterRow

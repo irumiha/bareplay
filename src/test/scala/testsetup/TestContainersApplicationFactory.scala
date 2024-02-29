@@ -1,7 +1,7 @@
 package testsetup
 
-import akka.Done
-import akka.actor.CoordinatedShutdown
+import org.apache.pekko.Done
+import org.apache.pekko.actor.CoordinatedShutdown
 import devcontainers.DevContainersComponent
 import play.api.{Application, ApplicationLoader, Configuration}
 

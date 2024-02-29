@@ -4,7 +4,7 @@ import org.testcontainers.containers.GenericContainer
 
 trait AllAppContainers extends PostgresAppContainer with KeycloakAppContainer {
 
-  override def containers: Seq[GenericContainer[_]] = Seq(
+  override def containers: Seq[GenericContainer[?]] = Seq(
     postgresContainer,
     keycloakContainer
   )
